@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Class Schedule - PassPoint</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .schedule-container { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .day-header { font-size: 18px; font-weight: bold; margin: 20px 0 10px 0; color: var(--text-dark); border-bottom: 2px solid var(--bg-light); padding-bottom: 5px; }
+        .list-row { transition: background 0.2s; border-radius: 8px; margin-bottom: 5px; border-top: none; border-bottom: 1px solid #f0f0f0; }
+        .list-row:hover { background: #f9fafb; transform: scale(1.01); }
+        .dot { height: 8px; width: 8px; background-color: var(--primary-green); border-radius: 50%; display: inline-block; margin-right: 10px; }
+    </style>
+</head>
+<body>
+    <aside>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height: 35px; margin-right: 10px;">
+            PassPoint
+        </div>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`home`) }}'">🏠 Home</button>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`attendance`) }}'">📋 My Attendance</button>
+        <button class="nav-btn active" onclick="location.href='{{ url_for(`schedule`) }}'">🗓️ Schedule</button>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`rfid`) }}'">🔍 Scan RFID</button>
+    </aside>
+
+    <main>
+        <header>
+            <h2>Your Academic Timetable</h2>
+            <h1>Schedule</h1>
+        </header>
+
+        <div class="schedule-container">
+            <div class="day-header">Monday</div>
+            <button class="list-row">
+                <span class="time">7:30 AM</span>
+                <span class="subject"><span class="dot"></span> ITE 400 - Systems Integration</span>
+                <span class="instructor">Reuben Mallorca</span>
+                <span class="room">PH 406</span>
+            </button>
+            <button class="list-row">
+                <span class="time">10:30 AM</span>
+                <span class="subject"><span class="dot" style="background: var(--blue);"></span> ITE 401 - Web Development</span>
+                <span class="instructor">Maria Santos</span>
+                <span class="room">Lab 2</span>
+            </button>
+
+            <div class="day-header">Tuesday</div>
+            <button class="list-row">
+                <span class="time">1:00 PM</span>
+                <span class="subject"><span class="dot" style="background: var(--orange);"></span> GEC 102 - Ethics</span>
+                <span class="instructor">John Doe</span>
+                <span class="room">PH 201</span>
+            </button>
+        </div>
+    </main>
+</body>
+</html>

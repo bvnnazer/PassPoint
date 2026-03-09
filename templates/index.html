@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PassPoint Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <aside>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='img/logo.png')}}" alt="Logo" style="height: 35px; margin-right: 10px;">
+            PassPoint
+        </div>
+        <button class="nav-btn active" onclick="location.href='{{ url_for(`home`) }}'">🏠 Home</button>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`attendance`) }}'">📋 My Attendance</button>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`schedule`) }}'">🗓️ Schedule</button>
+        <button class="nav-btn" onclick="location.href='{{ url_for(`rfid`) }}'">🔍 Scan RFID</button>
+
+        <div class="user-footer">
+            <div class="user-info">
+                <div class="avatar">GS</div>
+                <div>
+                    <div style="font-size: 14px; font-weight: bold;">Geo Sumanga</div>
+                    <div style="font-size: 11px; color: gray;">BSIT 2-12 · 3rd Year</div>
+                </div>
+            </div>
+            <button class="collapse-btn">⟨ Collapse</button>
+        </div>
+    </aside>
+
+    <main>
+        <header>
+            <h2>Welcome Back, Geo!</h2>
+            <h1>Dashboard</h1>
+        </header>
+
+        <div class="stats-grid">
+            <button class="stat-card bg-green">
+                <h3>Attendance Rate</h3>
+                <div class="val">97%</div>
+                <div class="sub">This Semester</div>
+            </button>
+            <button class="stat-card bg-blue">
+                <h3>Days Present</h3>
+                <div class="val">45</div>
+                <div class="sub">Out of 50 days</div>
+            </button>
+            <button class="stat-card bg-red">
+                <h3>Days Absent</h3>
+                <div class="val">5</div>
+                <div class="sub">Excused absences</div>
+            </button>
+            <button class="stat-card bg-orange">
+                <h3>Late Arrivals</h3>
+                <div class="val">3</div>
+                <div class="sub">This Semester</div>
+            </button>
+        </div>
+
+        <div class="section-box">
+            <div class="section-header">
+                <strong>Today's Schedule</strong>
+                <span>Mon, June 5 2025</span>
+            </div>
+            <button class="list-row" onclick="location.href='{{ url_for(`schedule`) }}'">
+                <span class="time">7:30 AM</span>
+                <span class="subject">ITE 400-Systems Integration</span>
+                <span class="instructor">Reuben Mallorca</span>
+                <span class="room">PH 406</span>
+                <span class="status-pill">Present</span>
+            </button>
+        </div>
+    </main>
+</body>
+</html>
