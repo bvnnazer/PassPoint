@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PassPoint – Schedule</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/studentstyle.css') }}">
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="{{ url_for('static', filename='assets/Logo.png') }}" alt="PassPoint"/>
+    </div>
+    <span class="logo-text">PassPoint</span>
+  </div>
+
+  
+  <nav class="nav">
+    <a class="nav-item" href="/studentportal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-dashboard"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M5 16h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /><path d="M15 12h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M15 4h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="/studentportal/attendance">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M15 19l2 2l4 -4" /></svg>
+      <span class="nav-label">My Attendance</span>
+    </a>
+    <a class="nav-item active" href="/studentportal/schedule"> 
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-clock"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.5 21h-4.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v3" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h10" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M18 16.5v1.5l.5 .5" /></svg>
+      <span class="nav-label">Schedule</span>
+    </a>
+    <a class="nav-item" href="/studentportal/scanrfid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-line-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M7 12h10" /></svg>
+      <span class="nav-label">Scan RFID</span>
+    </a>
+  </nav>
+
+  <a class="user-area user-area-link" href="/studentportal/profile">
+    <div class="avatar">GS</div>
+    <div class="user-info">
+      <strong>Geo Sumanga</strong>
+      <small>BSIT 2-12 · 3rd Year</small>
+    </div>
+  </a>
+
+  <button class="collapse-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    <span id="collapse-label">Collapse</span>
+  </button>
+</aside>
+
+<main class="main" id="main">
+  <div class="page active" id="page-schedule">
+    <h1 class="page-title">Class Schedule</h1>
+    <p class="page-sub">Your weekly timetable for the current semester.</p>
+
+    <div class="schedule-day-tabs" id="day-tabs">
+      <button class="day-tab active" data-day="Monday">Monday</button>
+      <button class="day-tab" data-day="Tuesday">Tuesday</button>
+      <button class="day-tab" data-day="Wednesday">Wednesday</button>
+      <button class="day-tab" data-day="Thursday">Thursday</button>
+      <button class="day-tab" data-day="Friday">Friday</button>
+      <button class="day-tab" data-day="Saturday">Saturday</button>
+    </div>
+
+    <div class="schedule-grid" id="schedule-grid"></div>
+  </div>
+</main>
+
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PassPoint – Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/studentstyle.css') }}">
+</head>
+<body>
+
+<!-- ── Sidebar ── -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="{{ url_for('static', filename='assets/Logo.png') }}" alt="PassPoint"/>
+    </div>
+    <span class="logo-text">PassPoint</span>
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item active" href="/studentportal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-layout-dashboard"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M5 16h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /><path d="M15 12h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M15 4h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="/studentportal/attendance">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-check"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M15 19l2 2l4 -4" /></svg>
+      <span class="nav-label">My Attendance</span>
+    </a>
+    <a class="nav-item" href="/studentportal/schedule"> 
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-calendar-clock"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.5 21h-4.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v3" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h10" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M18 16.5v1.5l.5 .5" /></svg>
+      <span class="nav-label">Schedule</span>
+    </a>
+    <a class="nav-item" href="/studentportal/scanrfid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-line-scan"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M7 12h10" /></svg>
+      <span class="nav-label">Scan RFID</span>
+    </a>
+  </nav>
+
+  <a class="user-area user-area-link" href="/studentportal/profile">
+    <div class="avatar">GS</div>
+    <div class="user-info">
+      <strong>Geo Sumanga</strong>
+      <small>BSIT 2-12 · 3rd Year</small>
+    </div>
+  </a>
+
+  <button class="collapse-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    <span id="collapse-label">Collapse</span>
+  </button>
+</aside>
+
+<!-- ── Main Content ── -->
+<main class="main" id="main">
+
+  <!-- ── Dashboard Page ── -->
+  <div class="page active" id="page-dashboard">
+    <h1 class="page-title">Dashboard</h1>
+    <p class="page-sub">Welcome back, Geo. Here's your attendance overview for today.</p>
+
+    <!-- Stat Cards -->
+    <div class="stats">
+      <div class="stat-card highlight">
+        <div class="stat-label">Attendance Rate</div>
+        <div class="stat-value">97%</div>
+        <div class="stat-note">This Semester</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Days Present</div>
+        <div class="stat-value">45</div>
+        <div class="stat-note">Out of 50 school days</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Days Absent</div>
+        <div class="stat-value">5</div>
+        <div class="stat-note">This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Late Arrivals</div>
+        <div class="stat-value">3</div>
+        <div class="stat-note">This Semester</div>
+      </div>
+    </div>
+
+    <!-- Today's Classes + Calendar -->
+    <div class="grid-2">
+
+      <!-- Classes -->
+      <div class="card class-cards">
+        <div class="card-header">
+          <span class="card-title">Today's Classes</span>
+          <span class="card-date">Mon, June 5 2025</span>
+        </div>
+        <div class="class-list-scroll">
+          <div class="class-item">
+            <span class="class-time">9:00 AM</span>
+            <span class="dot green"></span>
+            <div class="class-info">
+              <div class="class-name">Web Development</div>
+              <div class="class-sub">PH 402 · Maria Santos</div>
+            </div>
+            <span class="badge in">In</span>
+          </div>
+
+          <div class="class-item">
+            <span class="class-time">1:00 PM</span>
+            <span class="dot gray"></span>
+            <div class="class-info">
+              <div class="class-name">Software Engineering</div>
+              <div class="class-sub">PH 408 · Ana Cruz</div>
+            </div>
+            <span class="badge upcoming">Upcoming</span>
+          </div>
+
+          <div class="class-item">
+            <span class="class-time">2:30 PM</span>
+            <span class="dot gray"></span>
+            <div class="class-info">
+              <div class="class-name">Cybersecurity</div>
+              <div class="class-sub">PH 410 · Mark Lim</div>
+            </div>
+            <span class="badge upcoming">Upcoming</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Calendar -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Attendance Calendar</span>
+        </div>
+        <div class="cal-month">June 2025</div>
+        <div class="calendar-grid" id="calendar"></div>
+
+        <!-- Legend -->
+        <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
+            <span style="width:10px;height:10px;border-radius:3px;background:var(--green);display:inline-block;"></span>Present
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#fee2e2;display:inline-block;"></span>Absent
+          </div>
+          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
+            <span style="width:10px;height:10px;border-radius:3px;background:#fef9c3;display:inline-block;"></span>Late
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Weekly Overview -->
+    <div class="card overview-card">
+      <div class="card-header">
+        <span class="card-title">Weekly Attendance Overview</span>
+      </div>
+
+      <div class="subject-row">
+        <div class="subject-header">
+          <span class="subject-name">Web Development</span>
+          <div><span class="subject-pct">95%</span><span class="subject-status good">Good</span></div>
+        </div>
+        <div class="bar-track"><div class="bar-fill good" data-width="95"></div></div>
+      </div>
+
+      <div class="subject-row">
+        <div class="subject-header">
+          <span class="subject-name">Database Systems</span>
+          <div><span class="subject-pct">83%</span><span class="subject-status good">Good</span></div>
+        </div>
+        <div class="bar-track"><div class="bar-fill good" data-width="83"></div></div>
+      </div>
+
+      <div class="subject-row">
+        <div class="subject-header">
+          <span class="subject-name">Software Engineering</span>
+          <div><span class="subject-pct">68%</span><span class="subject-status risk">Risk</span></div>
+        </div>
+        <div class="bar-track"><div class="bar-fill risk" data-width="68"></div></div>
+      </div>
+
+      <div class="subject-row" style="margin-bottom:0">
+        <div class="subject-header">
+          <span class="subject-name">Cybersecurity</span>
+          <div><span class="subject-pct">59%</span><span class="subject-status low">Low</span></div>
+        </div>
+        <div class="bar-track"><div class="bar-fill low" data-width="59"></div></div>
+      </div>
+    </div>
+
+  </div><!-- end page-dashboard -->
+
+  <!-- ── My Attendance Page ── -->
+  <div class="page" id="page-attendance">
+    <h1 class="page-title">Attendance Records</h1>
+    <p class="page-sub">View your full attendance history by subject and date.</p>
+
+    <div class="att-stats">
+      <div class="att-card"><div class="att-label">Total</div><div class="att-value">150</div></div>
+      <div class="att-card"><div class="att-label">Present</div><div class="att-value green">120</div></div>
+      <div class="att-card"><div class="att-label">Absent</div><div class="att-value red">14</div></div>
+      <div class="att-card"><div class="att-label">Late</div><div class="att-value orange">16</div></div>
+    </div>
+
+    <div class="filters">
+      <select class="filter-select" id="filter-subject">
+        <option>All Subjects</option>
+        <option>Data Structures</option>
+        <option>Web Development</option>
+        <option>Database Systems</option>
+        <option>Cybersecurity</option>
+        <option>Software Eng.</option>
+      </select>
+      <select class="filter-select" id="filter-status">
+        <option>All Status</option>
+        <option>Present</option>
+        <option>Absent</option>
+        <option>Late</option>
+      </select>
+      <select class="filter-select" id="filter-period">
+        <option>This Month</option>
+        <option>Last Month</option>
+        <option>This Semester</option>
+      </select>
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="search-input" placeholder="Search...">
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Subject</th>
+            <th>Time Scanned</th>
+            <th>Teacher</th>
+            <th>Room</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="att-tbody"></tbody>
+      </table>
+    </div>
+  </div><!-- end page-attendance -->
+
+  <!-- ── Schedule Page ── -->
+  <div class="page" id="page-schedule">
+    <h1 class="page-title">Class Schedule</h1>
+    <p class="page-sub">Your weekly timetable for the current semester.</p>
+
+    <div class="schedule-day-tabs" id="day-tabs">
+      <button class="day-tab active" data-day="Monday">Monday</button>
+      <button class="day-tab" data-day="Tuesday">Tuesday</button>
+      <button class="day-tab" data-day="Wednesday">Wednesday</button>
+      <button class="day-tab" data-day="Thursday">Thursday</button>
+      <button class="day-tab" data-day="Friday">Friday</button>
+    </div>
+
+    <div class="schedule-grid" id="schedule-grid"></div>
+  </div><!-- end page-schedule -->
+
+  <!-- ── Scan RFID Page ── -->
+  <div class="page" id="page-rfid">
+    <h1 class="page-title">Scan RFID</h1>
+    <p class="page-sub">Tap your RFID card on the reader to log your attendance.</p>
+
+    <div class="rfid-layout">
+      <div class="rfid-scanner-card">
+        <div class="rfid-pulse-ring">
+          <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+        </div>
+        <div class="rfid-status-label">Waiting for Card…</div>
+        <div class="rfid-status-sub">Hold your RFID card near the reader</div>
+        <div class="rfid-card-id">Card ID: ── ── ── ──</div>
+      </div>
+
+      <div class="rfid-info-col">
+        <div class="rfid-detail-card">
+          <div class="rfid-detail-title">Student Information</div>
+          <div class="rfid-student-row">
+            <div class="rfid-avatar-lg">GS</div>
+            <div>
+              <div class="rfid-student-name">Geo Sumanga</div>
+              <div class="rfid-student-meta">BSIT 2-12 · 3rd Year · Student ID: 2022-0451</div>
+            </div>
+          </div>
+          <div class="rfid-fields" style="margin-top:16px;">
+            <div class="rfid-field">
+              <span class="rfid-field-label">RFID Card Number</span>
+              <span class="rfid-field-value">A4-3F-9C-12</span>
+            </div>
+            <div class="rfid-field">
+              <span class="rfid-field-label">Card Status</span>
+              <span class="rfid-field-value" style="color:var(--green);">Active</span>
+            </div>
+            <div class="rfid-field">
+              <span class="rfid-field-label">Last Scanned</span>
+              <span class="rfid-field-value">Today, 10:32 AM</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="rfid-detail-card">
+          <div class="rfid-detail-title">Today's Scan Log</div>
+          <div class="rfid-log">
+            <div class="rfid-log-item">
+              <span class="rfid-log-dot in"></span>
+              <span class="rfid-log-time">7:28 AM</span>
+              <span class="rfid-log-desc">Data Structures — PH 406</span>
+              <span class="rfid-log-badge in">IN</span>
+            </div>
+            <div class="rfid-log-item">
+              <span class="rfid-log-dot out"></span>
+              <span class="rfid-log-time">8:59 AM</span>
+              <span class="rfid-log-desc">Data Structures — PH 406</span>
+              <span class="rfid-log-badge out">OUT</span>
+            </div>
+            <div class="rfid-log-item">
+              <span class="rfid-log-dot in"></span>
+              <span class="rfid-log-time">9:02 AM</span>
+              <span class="rfid-log-desc">Web Development — PH 402</span>
+              <span class="rfid-log-badge in">IN</span>
+            </div>
+            <div class="rfid-log-item">
+              <span class="rfid-log-dot out"></span>
+              <span class="rfid-log-time">10:28 AM</span>
+              <span class="rfid-log-desc">Web Development — PH 402</span>
+              <span class="rfid-log-badge out">OUT</span>
+            </div>
+            <div class="rfid-log-item">
+              <span class="rfid-log-dot in"></span>
+              <span class="rfid-log-time">10:32 AM</span>
+              <span class="rfid-log-desc">Database Systems — PH 405</span>
+              <span class="rfid-log-badge in">IN</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div><!-- end page-rfid -->
+
+</main>
+
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  const socket = io("http://127.0.0.1:5000",
+    transports = ["websocket"]
+  );
+
+  socket.on("student_scanned", data => {
+    console.log(data)
+    student = data.student
+    subject = data.subject
+    student_class = data.classes
+    document.querySelector(".class-list-scroll").innerHTML += `
+        <div class="class-item">
+          <span class="class-time">${student_class.scanned_at}</span>
+          <span class="dot green"></span>
+          <div class="class-info">
+            <div class="class-name">${subject.name}</div>
+            <div class="class-sub">${subject.room} · Reuben Mallorca</div>
+          </div>
+          <span class="badge in">In</span>
+        </div>
+    `;
+  });
+</script>
+</body>
+</html>

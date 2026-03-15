@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PassPoint – Profile</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/studentstyle.css') }}">
+</head>
+<body>
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-icon">
+      <img src="{{ url_for('static', filename='assets/Logo.png') }}" alt="PassPoint"/>
+    </div>
+    <span class="logo-text">PassPoint</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="/studentportal">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M5 16h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /><path d="M15 12h4a1 1 0 0 1 1 1v6a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-6a1 1 0 0 1 1 -1" /><path d="M15 4h4a1 1 0 0 1 1 1v2a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1v-2a1 1 0 0 1 1 -1" /></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="/studentportal/attendance">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M11.5 21h-5.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v6" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h16" /><path d="M15 19l2 2l4 -4" /></svg>
+      <span class="nav-label">My Attendance</span>
+    </a>
+    <a class="nav-item" href="/studentportal/schedule">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10.5 21h-4.5a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v3" /><path d="M16 3v4" /><path d="M8 3v4" /><path d="M4 11h10" /><path d="M14 18a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M18 16.5v1.5l.5 .5" /></svg>
+      <span class="nav-label">Schedule</span>
+    </a>
+    <a class="nav-item" href="/studentportal/scanrfid">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M7 12h10" /></svg>
+      <span class="nav-label">Scan RFID</span>
+    </a>
+  </nav>
+  <a class="user-area user-area-link active" href="/studentportal/profile">
+    <div class="avatar">GS</div>
+    <div class="user-info">
+      <strong>Geo Sumanga</strong>
+      <small>BSIT 2-12 · 3rd Year</small>
+    </div>
+  </a>
+  <button class="collapse-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    <span id="collapse-label">Collapse</span>
+  </button>
+</aside>
+
+<main class="main" id="main">
+  <div class="page active" id="page-profile">
+
+    <!-- ── Header Card ── -->
+    <div class="profile-header-card">
+      <div class="profile-cover"></div>
+      <div class="profile-header-body">
+        <div class="profile-avatar-wrap">
+          <div class="profile-avatar" id="profile-avatar-display">GS</div>
+        </div>
+        <div class="profile-header-info">
+          <h2 class="profile-name" id="display-name">Geo Sumanga</h2>
+          <p class="profile-meta" id="display-meta">BSIT 2-12 · 3rd Year · Student ID: 2022-0451</p>
+        </div>
+        <div class="profile-header-stats">
+          <div class="profile-stat">
+            <span class="profile-stat-value">97%</span>
+            <span class="profile-stat-label">Attendance</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-value">45</span>
+            <span class="profile-stat-label">Present</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-value">5</span>
+            <span class="profile-stat-label">Absent</span>
+          </div>
+          <div class="profile-stat">
+            <span class="profile-stat-value">3</span>
+            <span class="profile-stat-label">Late</span>
+          </div>
+        </div>
+        <div class="profile-actions">
+          <button class="btn-edit" onclick="openEditModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            Edit Profile
+          </button>
+          <button class="btn-logout" onclick="confirmLogout()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M14 8v-2a2 2 0 0 0 -2 -2h-7a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h7a2 2 0 0 0 2 -2v-2" /><path d="M9 12h12l-3 -3" /><path d="M18 15l3 -3" /></svg>
+            Log Out
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Profile Grid ── -->
+    <div class="profile-grid">
+
+      <!-- Personal Info -->
+      <div class="profile-card">
+        <div class="card-header">
+          <span class="card-title">Personal Information</span>
+        </div>
+        <div class="profile-fields">
+          <div class="profile-field">
+            <span class="profile-field-label">Full Name</span>
+            <span class="profile-field-value" id="display-fullname">Geo Sumanga</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Student ID</span>
+            <span class="profile-field-value mono">2022-0451</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Email</span>
+            <span class="profile-field-value" id="display-email">geo.sumanga@university.edu.ph</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Course</span>
+            <span class="profile-field-value" id="display-course">BSIT</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Section</span>
+            <span class="profile-field-value" id="display-section">2-12</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Year Level</span>
+            <span class="profile-field-value" id="display-year">3rd Year</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- RFID Card -->
+      <div class="profile-card">
+        <div class="card-header">
+          <span class="card-title">RFID Card</span>
+        </div>
+        <div class="profile-rfid-display">
+          <div class="profile-rfid-card">
+            <div class="profile-rfid-top">
+              <span>PassPoint</span>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 8v-2a2 2 0 0 1 2 -2h2" /><path d="M4 16v2a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v2" /><path d="M16 20h2a2 2 0 0 0 2 -2v-2" /><path d="M7 12h10" /></svg>
+            </div>
+            <div class="profile-rfid-chip">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="7" width="10" height="10" rx="1"/><path d="M7 12H4M17 12h3M12 7V4M12 17v3"/></svg>
+            </div>
+            <div class="profile-rfid-number">A4 · 3F · 9C · 12</div>
+            <div class="profile-rfid-footer">
+              <div class="profile-rfid-owner">Geo Sumanga</div>
+              <div class="profile-rfid-status">● Active</div>
+            </div>
+          </div>
+        </div>
+        <div class="profile-fields" style="margin-top:14px;">
+          <div class="profile-field">
+            <span class="profile-field-label">Card Number</span>
+            <span class="profile-field-value mono">A4-3F-9C-12</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Card Status</span>
+            <span class="profile-field-value" style="color:var(--green);">● Active</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Last Scanned</span>
+            <span class="profile-field-value">Today, 10:32 AM</span>
+          </div>
+          <div class="profile-field">
+            <span class="profile-field-label">Registered</span>
+            <span class="profile-field-value">Jan 10, 2025</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Attendance Summary -->
+      <div class="profile-card profile-card-wide">
+        <div class="card-header">
+          <span class="card-title">Attendance Summary</span>
+        </div>
+        <div class="profile-att-grid">
+          <div class="profile-att-item present">
+            <span class="profile-att-value">120</span>
+            <span class="profile-att-label">Present</span>
+          </div>
+          <div class="profile-att-item absent">
+            <span class="profile-att-value">14</span>
+            <span class="profile-att-label">Absent</span>
+          </div>
+          <div class="profile-att-item late">
+            <span class="profile-att-value">16</span>
+            <span class="profile-att-label">Late</span>
+          </div>
+          <div class="profile-att-item total">
+            <span class="profile-att-value">150</span>
+            <span class="profile-att-label">Total Classes</span>
+          </div>
+        </div>
+        <div class="profile-bar-section">
+          <div class="profile-bar-label">
+            <span>Overall Attendance Rate</span>
+            <span style="font-weight:700; color:var(--green);">97%</span>
+          </div>
+          <div class="profile-bar-track">
+            <div class="profile-bar-fill" style="width:97%;"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<!-- ── Edit Profile Modal ── -->
+<div class="modal-overlay" id="edit-modal" onclick="closeEditModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 class="modal-title">Edit Profile</h3>
+      <button class="modal-close" onclick="closeEditModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label class="modal-label">Full Name</label>
+        <input class="modal-input" id="edit-fullname" type="text" value="Geo Sumanga"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Email</label>
+        <input class="modal-input" id="edit-email" type="email" value="geo.sumanga@university.edu.ph"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Course</label>
+        <input class="modal-input" id="edit-course" type="text" value="BSIT"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Section</label>
+        <input class="modal-input" id="edit-section" type="text" value="2-12"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Year Level</label>
+        <div class="modal-select-wrap">
+          <select class="modal-input modal-select" id="edit-year">
+            <option>1st Year</option>
+            <option>2nd Year</option>
+            <option selected>3rd Year</option>
+            <option>4th Year</option>
+          </select>
+          <svg class="modal-select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeEditModal()">Cancel</button>
+      <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Logout Confirm Modal ── -->
+<div class="modal-overlay" id="logout-modal" onclick="closeLogoutModal(event)">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <h3 class="modal-title">Log Out</h3>
+      <button class="modal-close" onclick="closeLogoutModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:14px; color:var(--muted); margin:0;">Are you sure you want to log out of PassPoint?</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+      <button class="btn-logout-confirm" onclick="window.location.href='/logout'">Yes, Log Out</button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+<script>
+  // ── Edit Modal ──
+  function openEditModal() {
+    // Pre-populate inputs from current displayed values
+    document.getElementById('edit-fullname').value = document.getElementById('display-fullname').textContent;
+    document.getElementById('edit-email').value    = document.getElementById('display-email').textContent;
+    document.getElementById('edit-course').value   = document.getElementById('display-course').textContent;
+    document.getElementById('edit-section').value  = document.getElementById('display-section').textContent;
+
+    const year = document.getElementById('display-year').textContent;
+    const yearSelect = document.getElementById('edit-year');
+    for (let opt of yearSelect.options) {
+      opt.selected = opt.value === year;
+    }
+
+    document.getElementById('edit-modal').classList.add('active');
+    document.getElementById('edit-fullname').focus();
+  }
+
+  function closeEditModal(e) {
+    if (!e || e.target.id === 'edit-modal')
+      document.getElementById('edit-modal').classList.remove('active');
+  }
+
+  function saveProfile() {
+    const name    = document.getElementById('edit-fullname').value.trim();
+    const email   = document.getElementById('edit-email').value.trim();
+    const course  = document.getElementById('edit-course').value.trim();
+    const section = document.getElementById('edit-section').value.trim();
+    const year    = document.getElementById('edit-year').value;
+
+    // Validation
+    if (!name) {
+      document.getElementById('edit-fullname').style.borderColor = 'var(--red)';
+      document.getElementById('edit-fullname').focus();
+      return;
+    }
+    document.getElementById('edit-fullname').style.borderColor = '';
+
+    // Update all display fields
+    document.getElementById('display-fullname').textContent = name;
+    document.getElementById('display-email').textContent    = email;
+    document.getElementById('display-course').textContent   = course;
+    document.getElementById('display-section').textContent  = section;
+    document.getElementById('display-year').textContent     = year;
+
+    // Update header
+    document.getElementById('display-name').textContent = name;
+    document.getElementById('display-meta').textContent =
+      `${course} ${section} · ${year} · Student ID: 2022-0451`;
+
+    // Update avatar initials
+    const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+    document.getElementById('profile-avatar-display').textContent = initials;
+
+    // Show success flash on button
+    const saveBtn = document.querySelector('.btn-save');
+    saveBtn.textContent = '✓ Saved!';
+    saveBtn.style.background = '#16a34a';
+    setTimeout(() => {
+      saveBtn.textContent = 'Save Changes';
+      saveBtn.style.background = '';
+      closeEditModal();
+    }, 800);
+  }
+
+  // ── Logout Modal ──
+  function confirmLogout() {
+    document.getElementById('logout-modal').classList.add('active');
+  }
+  function closeLogoutModal(e) {
+    if (!e || e.target.id === 'logout-modal')
+      document.getElementById('logout-modal').classList.remove('active');
+  }
+
+  // ── Close modal on Escape key ──
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      closeEditModal();
+      closeLogoutModal();
+    }
+  });
+</script>
+</body>
+</html>

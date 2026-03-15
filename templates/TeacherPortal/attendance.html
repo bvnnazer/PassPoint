@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PassPoint — Attendance</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script>
+(function(){
+  if(localStorage.getItem("sidebar_collapsed")!=="1")return;
+  document.documentElement.classList.add("sidebar-pre-collapsed");
+  document.addEventListener("DOMContentLoaded",function(){
+    var sb=document.getElementById("t-sidebar");
+    var mn=document.getElementById("t-main");
+    if(!sb)return;
+    sb.style.transition="none";
+    if(mn)mn.style.transition="none";
+    sb.classList.add("collapsed");
+    if(mn)mn.classList.add("shifted");
+    document.documentElement.classList.remove("sidebar-pre-collapsed");
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        sb.style.transition="";
+        if(mn)mn.style.transition="";
+      });
+    });
+  });
+})();
+</script>
+<link rel="stylesheet" href="/static/css/teacherstyle.css">
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="t-sidebar">
+  <a class="logo" href="#">
+    <div class="logo-icon">
+      <img src="/static/assets/Logo.png" alt="PassPoint">
+    </div>
+    <span class="logo-text">PassPoint</span>
+  </a>
+  <nav class="nav">
+    <a class="nav-item" href="/teacherportal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item active" href="/teacherportal/attendance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+      <span class="nav-label">Attendance</span>
+    </a>
+    <a class="nav-item" href="/teacherportal/students">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="nav-label">Students</span>
+    </a>
+    <a class="nav-item" href="/teacherportal/records">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="nav-label">All Records</span>
+    </a>
+    <a class="nav-item" href="/teacherportal/classes">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="nav-label">My Classes</span>
+    </a>
+  </nav>
+  <div class="user-area">
+    <div class="avatar">MS</div>
+    <div class="user-info">
+      <strong>Ms. Santos</strong>
+      <small>Teacher · BSIT</small>
+    </div>
+  </div>
+  <button class="collapse-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    <span id="t-collapse-label">Collapse</span>
+    
+  </button>
+</aside>
+
+<!-- MAIN -->
+<main class="main" id="t-main">
+  <h1 class="page-title">Attendance</h1>
+  <p class="page-sub"><span class="live-dot"></span>Real-time feed — updates from student scans</p>
+
+  <div class="filter-row">
+    <select class="input" id="live-subj-filter" onchange="renderLive()">
+      <option value="">All Subjects</option>
+      <option>Data Structures</option>
+      <option>Web Development</option>
+      <option>Database Systems</option>
+      <option>Software Engineering</option>
+      <option>Cybersecurity</option>
+    </select>
+    <select class="input" id="live-status-filter" onchange="renderLive()">
+      <option value="">All Status</option>
+      <option>Present</option>
+      <option>Late</option>
+      <option>Absent</option>
+    </select>
+    <input type="text" class="input" id="live-search" placeholder="🔍 Search student..." oninput="renderLive()" style="flex:1">
+    <button class="btn btn-green" onclick="openRfidModal()" style="display:flex;align-items:center;gap:6px;white-space:nowrap">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h.01M11 15h2"/></svg>
+      Scan RFID
+    </button>
+    <button class="btn btn-outline" onclick="renderLive(); showToast('↻ Refreshed')">↻ Refresh</button>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="card-header" style="padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:0">
+      <span class="card-title">Today — <span id="live-date"></span></span>
+      <span class="card-date" id="live-count">0 scans</span>
+    </div>
+    <table>
+      <thead><tr><th>Student</th><th>Student ID</th><th>Time In</th><th>Subject</th><th>Status</th><th>Action</th></tr></thead>
+      <tbody id="live-tbody"></tbody>
+    </table>
+  </div>
+</main>
+
+<!-- EDIT STATUS MODAL -->
+<div id="edit-modal" style="display:none;position:fixed;inset:0;z-index:200;align-items:center;justify-content:center">
+  <div id="modal-backdrop" onclick="closeModal()" style="position:absolute;inset:0;background:rgba(15,23,42,0.35);backdrop-filter:blur(2px)"></div>
+  <div style="position:relative;background:white;border-radius:14px;box-shadow:0 8px 32px rgba(0,0,0,0.15);padding:24px;width:100%;max-width:360px;margin:16px;animation:modalIn 0.2s ease">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <div style="font-size:15px;font-weight:700">Edit Attendance</div>
+      <button onclick="closeModal()" style="border:none;background:none;cursor:pointer;color:var(--muted);font-size:18px;line-height:1;padding:2px 6px">×</button>
+    </div>
+    <div id="modal-student" style="font-size:12px;color:var(--muted);margin-bottom:18px"></div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:20px">
+      <button onclick="applyStatus('present')" class="modal-status-btn" data-status="present"
+        style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;border:1.5px solid var(--border);background:white;cursor:pointer;font-family:var(--font);transition:all 0.14s;text-align:left">
+        <span style="width:32px;height:32px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">✅</span>
+        <div><div style="font-size:13px;font-weight:700;color:var(--green-dark)">Present</div><div style="font-size:11px;color:var(--muted)">Student was on time</div></div>
+      </button>
+      <button onclick="applyStatus('late')" class="modal-status-btn" data-status="late"
+        style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;border:1.5px solid var(--border);background:white;cursor:pointer;font-family:var(--font);transition:all 0.14s;text-align:left">
+        <span style="width:32px;height:32px;border-radius:50%;background:var(--yellow-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">⏰</span>
+        <div><div style="font-size:13px;font-weight:700;color:#b45309">Late</div><div style="font-size:11px;color:var(--muted)">Student arrived after grace period</div></div>
+      </button>
+      <button onclick="applyStatus('absent')" class="modal-status-btn" data-status="absent"
+        style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:9px;border:1.5px solid var(--border);background:white;cursor:pointer;font-family:var(--font);transition:all 0.14s;text-align:left">
+        <span style="width:32px;height:32px;border-radius:50%;background:var(--red-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">❌</span>
+        <div><div style="font-size:13px;font-weight:700;color:#b91c1c">Absent</div><div style="font-size:11px;color:var(--muted)">Student did not attend</div></div>
+      </button>
+    </div>
+    <button onclick="closeModal()" style="width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--border);background:white;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:var(--font)">Cancel</button>
+  </div>
+</div>
+
+<!-- RFID MODAL -->
+<div id="rfid-modal" style="display:none;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center">
+  <div onclick="closeRfidModal()" style="position:absolute;inset:0;background:rgba(15,23,42,0.4);backdrop-filter:blur(2px)"></div>
+  <div style="position:relative;background:white;border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.18);padding:28px 28px 24px;width:100%;max-width:400px;margin:16px;animation:modalIn 0.2s ease">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+      <div style="font-size:16px;font-weight:700">Scan RFID Card</div>
+      <button onclick="closeRfidModal()" style="border:none;background:none;cursor:pointer;color:var(--muted);font-size:20px;line-height:1;padding:2px 6px">×</button>
+    </div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:20px">Select a subject, then tap the student's RFID card.</div>
+    <div style="margin-bottom:14px">
+      <label class="form-label">Subject</label>
+      <select id="rfid-modal-subject" class="form-control">
+        <option value="">— Select Subject —</option>
+        <option>Data Structures</option><option>Web Development</option>
+        <option>Database Systems</option><option>Software Engineering</option><option>Cybersecurity</option>
+      </select>
+    </div>
+    <div id="rfid-scanner-box" style="border:2px dashed var(--border);border-radius:12px;padding:24px 16px;text-align:center;cursor:pointer;transition:border-color 0.2s;margin-bottom:16px" onclick="document.getElementById('rfid-hidden-input').focus();this.style.borderColor='var(--green)'">
+      <div id="rfid-anim-icon" style="width:56px;height:56px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;margin:0 auto 12px">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/><path d="M7 15h.01M11 15h2"/></svg>
+      </div>
+      <div id="rfid-modal-status" style="font-size:14px;font-weight:600;margin-bottom:4px">Ready</div>
+      <div id="rfid-modal-sub" style="font-size:12px;color:var(--muted)">Click here, then swipe / tap RFID card</div>
+      <input id="rfid-hidden-input" type="text" style="position:absolute;opacity:0;width:1px;height:1px" onkeydown="rfidKeyHandler(event,this)" autocomplete="off">
+    </div>
+    <div id="rfid-last-result" style="display:none;background:var(--bg);border-radius:10px;padding:12px 14px;margin-bottom:16px;align-items:center;gap:12px">
+      <div id="rfid-res-avatar" style="width:40px;height:40px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:var(--green-dark);flex-shrink:0"></div>
+      <div style="flex:1;min-width:0">
+        <div id="rfid-res-name" style="font-size:13px;font-weight:700"></div>
+        <div id="rfid-res-detail" style="font-size:11px;color:var(--muted)"></div>
+      </div>
+      <span id="rfid-res-badge" class="badge"></span>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-outline" style="flex:1" onclick="closeRfidModal()">Done</button>
+      <button class="btn btn-green btn-sm" onclick="rfidDemoScan()" style="white-space:nowrap">Demo Scan</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+<script src="/static/js/teacher.js"></script>
+<script>
+  window.onload = () => { injectDemoRecord(); renderLive(); };
+  setInterval(() => renderLive(), 5000);
+</script>
+</body>
+</html>

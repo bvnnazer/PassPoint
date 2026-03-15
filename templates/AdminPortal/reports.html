@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PassPoint — Reports</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+(function(){
+  if(localStorage.getItem("sidebar_collapsed")!=="1")return;
+  document.documentElement.classList.add("sidebar-pre-collapsed");
+  document.addEventListener("DOMContentLoaded",function(){
+    var sb=document.getElementById("a-sidebar");
+    var mn=document.getElementById("a-main");
+    if(!sb)return;
+    sb.style.transition="none";
+    if(mn)mn.style.transition="none";
+    sb.classList.add("collapsed");
+    if(mn)mn.classList.add("shifted");
+    document.documentElement.classList.remove("sidebar-pre-collapsed");
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){
+        sb.style.transition="";
+        if(mn)mn.style.transition="";
+      });
+    });
+  });
+})();
+</script>
+  <link rel="stylesheet" href="/static/css/adminstyle.css">
+</head>
+<body>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar" id="a-sidebar">
+  <a class="logo" href="#">
+    <div class="logo-icon">
+      <img src="/static/assets/Logo.png" alt="PassPoint">
+    </div>
+    <span class="logo-text">PassPoint</span>
+  </a>
+  <nav class="nav">
+    <div class="nav-section">Overview</div>
+    <a class="nav-item" href="/adminportal">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      <span class="nav-label">Dashboard</span>
+    </a>
+    <a class="nav-item" href="/adminportal/attendance">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/></svg>
+      <span class="nav-label">Attendance</span>
+    </a>
+    <a class="nav-item" href="/adminportal/records">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      <span class="nav-label">All Records</span>
+    </a>
+    <div class="nav-section">Management</div>
+    <a class="nav-item" href="/adminportal/teachers">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <span class="nav-label">Teachers</span>
+    </a>
+    <a class="nav-item" href="/adminportal/students">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      <span class="nav-label">Students</span>
+    </a>
+    <a class="nav-item" href="/adminportal/rfidtags">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
+      <span class="nav-label">RFID Tags</span>
+    </a>
+    <div class="nav-section">Analytics</div>
+    <a class="nav-item active" href="/adminportal/reports">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="nav-label">Reports</span>
+    </a>
+  </nav>
+  <div class="user-area">
+    <div class="avatar">AD</div>
+    <div class="user-info">
+      <strong>Admin</strong>
+      <small>System Administrator</small>
+    </div>
+  </div>
+  <button class="collapse-btn" onclick="toggleSidebar()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+    <span id="a-collapse-label">Collapse</span>
+  </button>
+</aside>
+
+<main class="main" id="a-main">
+  <h1 class="page-title">Reports</h1>
+  <p class="page-sub">School-wide analytics and attendance summaries.</p>
+  <div class="stats">
+    <div class="stat-card highlight">
+      <div class="stat-label">Overall Rate</div>
+      <div class="stat-value" id="rp-rate">—</div>
+      <div class="stat-note">All-time average</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Scans</div>
+      <div class="stat-value" id="rp-scans">—</div>
+      <div class="stat-note">All records</div>
+    </div>
+    <div class="stat-card red-hl">
+      <div class="stat-label">Flagged Students</div>
+      <div class="stat-value" id="rp-flagged">—</div>
+      <div class="stat-note">Below 80% rate</div>
+    </div>
+    <div class="stat-card blue-hl">
+      <div class="stat-label">Perfect Attendance</div>
+      <div class="stat-value" id="rp-perfect">—</div>
+      <div class="stat-note">100% rate</div>
+      </div>
+  </div>
+  <div class="card">
+    <div class="card-header">
+        <span class="card-title">Attendance Rate by Subject</span>
+        </div>
+    <div id="rp-subj-bars"></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div class="card-header" style="padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:0">
+      <span class="card-title">⚠ Students Below 80%</span>
+      <button class="btn btn-outline btn-sm" onclick="showToast('📮 Notifications sent to all guardians!')">Notify All</button>
+    </div>
+    <table>
+        <thead>
+          <tr><th>Student</th><th>Student ID</th><th>Rate</th><th>Absences</th><th>Action</th></tr>
+        </thead>
+        <tbody id="rp-flagged-body"></tbody>
+      </table>
+  </div>
+</main>
+
+<div class="toast" id="toast"><span id="toast-msg"></span></div>
+<script src="/static/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,253 @@
+:root {
+    --green: #16a34a;
+    --green-dark: #15803d;
+    --green-hover: #f0fdf4;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --muted: #64748b;
+    --font: 'Inter', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 100%; height: 100%;
+    font-family: var(--font);
+    background: #0f172a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  /* ══════════════════════════════════
+     CONTAINER — the reference pattern
+     uses a single #container with an
+     .active toggle class
+  ══════════════════════════════════ */
+  #container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  /* ══════════════════════════════════
+     FORM PANELS
+     Both always rendered. Sign-in on
+     left, sign-up on right. The green
+     overlay physically covers one at
+     a time.
+  ══════════════════════════════════ */
+  .form-panel {
+    position: absolute;
+    top: 0;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 56px;
+    background: #fff;
+    transition: all 0.6s ease-in-out;
+  }
+
+  .sign-in { left: 0; }
+  .sign-up { right: 0; }
+
+  /* ══════════════════════════════════
+     GREEN OVERLAY PANEL
+     Starts on left. On .active it
+     slides to cover the right half.
+     Border radius swaps sides but
+     never animates — changed via JS
+     at the halfway point.
+  ══════════════════════════════════ */
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: var(--green);
+    z-index: 100;
+    transition: transform 0.6s ease-in-out;
+    border-radius: 0 30px 30px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  #container.active .overlay {
+    transform: translateX(100%);
+  }
+
+  /* ══════════════════════════════════
+     OVERLAY CONTENT PANELS
+     .panel-left  = shown when overlay is on left  (Get Started)
+     .panel-right = shown when overlay is on right (Sign In)
+  ══════════════════════════════════ */
+  .overlay-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 52px 44px;
+    text-align: center;
+    transition: transform 0.6s ease-in-out, opacity 0.4s ease-in-out;
+  }
+
+  /* Default (overlay on left): panel-left visible, panel-right hidden */
+  .overlay .panel-left {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+    transition-delay: 0.15s;
+  }
+  .overlay .panel-right {
+    opacity: 0;
+    transform: translateX(120px);
+    pointer-events: none;
+    transition-delay: 0s;
+  }
+
+  /* Active (overlay on right): panel-right visible, panel-left hidden */
+  #container.active .overlay .panel-left {
+    opacity: 0;
+    transform: translateX(-120px);
+    pointer-events: none;
+    transition-delay: 0s;
+  }
+  #container.active .overlay .panel-right {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: all;
+    transition-delay: 0.15s;
+  }
+
+  /* Overlay typography */
+  .logo-img {
+    width: 76px; height: 76px;
+    object-fit: contain;
+    margin-bottom: 18px;
+  }
+  .overlay-panel h2 {
+    font-size: 28px; font-weight: 800;
+    color: #fff; margin-bottom: 12px;
+    letter-spacing: -0.4px;
+  }
+  .overlay-panel p {
+    font-size: 13.5px;
+    color: rgba(255,255,255,0.87);
+    line-height: 1.7;
+    margin-bottom: 32px;
+    max-width: 270px;
+  }
+  .btn-ghost {
+    padding: 12px 36px;
+    background: transparent;
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 50px;
+    cursor: pointer;
+    font-family: var(--font);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .btn-ghost:hover { background: rgba(255,255,255,0.15); border-color: #fff; }
+
+  /* ══════════════════════════════════
+     SHARED FORM STYLES
+  ══════════════════════════════════ */
+  .panel-title {
+    font-size: 28px; font-weight: 800;
+    color: var(--text); margin-bottom: 5px;
+    letter-spacing: -0.4px;
+  }
+  .panel-sub {
+    font-size: 13px; color: var(--muted);
+    margin-bottom: 20px; text-align: center;
+  }
+
+  .social-btns { display: flex; gap: 10px; margin-bottom: 16px; }
+  .social-btn {
+    width: 42px; height: 42px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  }
+  .social-btn:hover {
+    border-color: var(--green);
+    background: var(--green-hover);
+    transform: translateY(-1px);
+  }
+  .social-btn svg { width: 17px; height: 17px; }
+
+  .or-divider {
+    display: flex; align-items: center; gap: 10px;
+    width: 100%; max-width: 340px; margin-bottom: 14px;
+  }
+  .or-divider::before, .or-divider::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+  .or-divider span {
+    font-size: 10px; color: var(--muted); font-weight: 600;
+    letter-spacing: 0.6px; white-space: nowrap;
+  }
+
+  .field { width: 100%; max-width: 340px; margin-bottom: 11px; }
+  .field input {
+    width: 100%; padding: 12px 15px;
+    border: 1.5px solid var(--border); border-radius: 10px;
+    font-size: 13.5px; font-family: var(--font); color: var(--text);
+    background: #f8fafc; outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+  }
+  .field input:focus {
+    border-color: var(--green); background: #fff;
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.08);
+  }
+  .field input::placeholder { color: #b0bec5; }
+
+  .field-row {
+    display: flex; gap: 10px;
+    width: 100%; max-width: 340px; margin-bottom: 11px;
+  }
+  .field-row .field { margin-bottom: 0; max-width: none; flex: 1; }
+
+  .forgot {
+    font-size: 12px; color: var(--muted);
+    text-align: right; margin-bottom: 18px;
+    max-width: 340px; width: 100%;
+  }
+  .forgot a { text-decoration: none; color: inherit; }
+  .forgot a:hover { color: var(--green); }
+
+  .btn-main {
+    width: 100%; max-width: 340px; padding: 13px;
+    background: var(--green); color: #fff;
+    font-size: 13px; font-weight: 700;
+    border: none; border-radius: 50px;
+    cursor: pointer; font-family: var(--font);
+    letter-spacing: 1px; text-transform: uppercase;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .btn-main:hover { background: var(--green-dark); }
+  .btn-main:active { transform: scale(0.98); }
+
+  .terms {
+    font-size: 11px; color: var(--muted);
+    text-align: center; max-width: 300px;
+    margin-top: 10px; line-height: 1.6;
+  }
+  .terms a { color: var(--green); text-decoration: none; font-weight: 600; }
+  .terms a:hover { text-decoration: underline; }
