@@ -6,6 +6,52 @@
   <title>PassPoint – Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/studentstyle.css') }}">
+  <style>
+    /* ── Calendar ── */
+    .cal-day { position: relative; border-radius: 8px; }
+
+    /* Scanned days — colored background box like the screenshot */
+    .cal-day.present {
+      background: #16a34a !important;
+      color: #fff !important;
+      font-weight: 700;
+      border-radius: 8px;
+    }
+    .cal-day.late {
+      background: #fef9c3 !important;
+      color: #92400e !important;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1.5px solid #fde68a;
+    }
+    .cal-day.absent {
+      background: #fee2e2 !important;
+      color: #dc2626 !important;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1.5px solid #fca5a5;
+    }
+
+    /* Today — green ring outline, no fill unless scanned */
+    .cal-day.today:not(.present):not(.late):not(.absent) {
+      outline: 2px solid #16a34a;
+      outline-offset: -2px;
+      color: #16a34a !important;
+      background: transparent !important;
+      font-weight: 700;
+    }
+    /* Today + scanned — keep scan color, add ring */
+    .cal-day.today.present { outline: 2px solid #15803d; outline-offset: -2px; }
+    .cal-day.today.late    { outline: 2px solid #d97706; outline-offset: -2px; }
+    .cal-day.today.absent  { outline: 2px solid #dc2626; outline-offset: -2px; }
+
+    /* ── Weekly Overview — always show bars ── */
+    .bar-track { background: #f1f5f9; border-radius: 99px; height: 8px; overflow: hidden; }
+    .bar-fill   { height: 100%; border-radius: 99px; width: 0; transition: width 0.6s ease; }
+    .bar-fill.good { background: #16a34a; }
+    .bar-fill.risk { background: #f59e0b; }
+    .bar-fill.low  { background: #ef4444; }
+  </style>
 </head>
 <body>
 
@@ -57,93 +103,99 @@
   <!-- ── Dashboard Page ── -->
   <div class="page active" id="page-dashboard">
     <h1 class="page-title">Dashboard</h1>
-    <p class="page-sub">Welcome back, Geo. Here's your attendance overview for today.</p>
+    <p class="page-sub">Good day, {{student.first_name}}. Below is your attendance summary for today.</p>
 
     <!-- Stat Cards -->
     <div class="stats">
       <div class="stat-card highlight">
         <div class="stat-label">Attendance Rate</div>
-        <div class="stat-value">97%</div>
+        <div class="stat-value">{{ rate }}%</div>
         <div class="stat-note">This Semester</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Days Present</div>
-        <div class="stat-value">45</div>
+        <div class="stat-value">{{ present }}</div>
         <div class="stat-note">Out of 50 school days</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Days Absent</div>
-        <div class="stat-value">5</div>
+        <div class="stat-value">{{ absent_week }}</div>
         <div class="stat-note">This Week</div>
       </div>
       <div class="stat-card">
         <div class="stat-label">Late Arrivals</div>
-        <div class="stat-value">3</div>
+        <div class="stat-value">{{ late }}</div>
         <div class="stat-note">This Semester</div>
       </div>
     </div>
 
-    <!-- Today's Classes + Calendar -->
+    <!-- Today's Class Schedule + Calendar -->
     <div class="grid-2">
 
       <!-- Classes -->
       <div class="card class-cards">
         <div class="card-header">
-          <span class="card-title">Today's Classes</span>
-          <span class="card-date">Mon, June 5 2025</span>
+          <span class="card-title">Today's Class Schedule</span>
+          <span class="card-date">Monday, June 5, 2025</span>
         </div>
         <div class="class-list-scroll">
-          <div class="class-item">
-            <span class="class-time">9:00 AM</span>
-            <span class="dot green"></span>
-            <div class="class-info">
-              <div class="class-name">Web Development</div>
-              <div class="class-sub">PH 402 · Maria Santos</div>
-            </div>
-            <span class="badge in">In</span>
-          </div>
 
-          <div class="class-item">
-            <span class="class-time">1:00 PM</span>
-            <span class="dot gray"></span>
-            <div class="class-info">
-              <div class="class-name">Software Engineering</div>
-              <div class="class-sub">PH 408 · Ana Cruz</div>
-            </div>
-            <span class="badge upcoming">Upcoming</span>
-          </div>
+          {% for attendance in attendance_today %}
 
-          <div class="class-item">
-            <span class="class-time">2:30 PM</span>
-            <span class="dot gray"></span>
-            <div class="class-info">
-              <div class="class-name">Cybersecurity</div>
-              <div class="class-sub">PH 410 · Mark Lim</div>
+            <div class="class-item">
+              <span class="class-time">{{ attendance.scanned_at }}</span>
+              <span class="dot green"></span>
+              <div class="class-info">
+                <div class="class-name">{{ attendance.subject }}</div>
+                <div class="class-sub">{{attendance.room}} · {{attendance.teacher_first}} {{attendance.teacher_last}}</div>
+              </div>
+              <span class="badge 
+                {% if attendance.status == 'present' %}present
+                {% elif attendance.status == 'late' %}late
+                {% elif attendance.status == 'absent' %}absent
+                {% endif %}
+              ">{{ attendance.status }}</span>
             </div>
-            <span class="badge upcoming">Upcoming</span>
-          </div>
+
+          {% endfor %}
         </div>
       </div>
 
       <!-- Calendar -->
       <div class="card">
         <div class="card-header">
-          <span class="card-title">Attendance Calendar</span>
+          <span class="card-title">Monthly Attendance Calendar</span>
         </div>
-        <div class="cal-month">June 2025</div>
-        <div class="calendar-grid" id="calendar"></div>
-
+        <div class="cal-month">{{ month_name }}</div>
+        <div class="calendar-grid" id="calendar">
+          <!-- Day headers -->
+          <div class="cal-head">Su</div>
+          <div class="cal-head">Mo</div>
+          <div class="cal-head">Tu</div>
+          <div class="cal-head">We</div>
+          <div class="cal-head">Th</div>
+          <div class="cal-head">Fr</div>
+          <div class="cal-head">Sa</div>
+          <!-- Empty cells before first day -->
+          {% for _ in range(first_weekday_sun) %}
+            <div class="cal-day empty"></div>
+          {% endfor %}
+          <!-- Day cells -->
+          {% for d in range(1, days_in_month + 1) %}
+            <div class="cal-day
+              {% if cal_data.get(d) == 'present' %}present
+              {% elif cal_data.get(d) == 'late' %}late
+              {% elif cal_data.get(d) == 'absent' %}absent
+              {% endif %}
+              {% if d == today_day %}today{% endif %}
+            ">{{ d }}</div>
+          {% endfor %}
+        </div>
         <!-- Legend -->
-        <div style="display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
-            <span style="width:10px;height:10px;border-radius:3px;background:var(--green);display:inline-block;"></span>Present
-          </div>
-          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
-            <span style="width:10px;height:10px;border-radius:3px;background:#fee2e2;display:inline-block;"></span>Absent
-          </div>
-          <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);">
-            <span style="width:10px;height:10px;border-radius:3px;background:#fef9c3;display:inline-block;"></span>Late
-          </div>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><span class="cal-legend-dot present"></span>Present</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot absent"></span>Absent</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot late"></span>Late</div>
         </div>
       </div>
     </div>
@@ -151,40 +203,40 @@
     <!-- Weekly Overview -->
     <div class="card overview-card">
       <div class="card-header">
-        <span class="card-title">Weekly Attendance Overview</span>
+        <span class="card-title">Subject Attendance Overview</span>
       </div>
-
-      <div class="subject-row">
-        <div class="subject-header">
-          <span class="subject-name">Web Development</span>
-          <div><span class="subject-pct">95%</span><span class="subject-status good">Good</span></div>
+      {% set default_subjects = ['Data Structures', 'Web Development', 'Database Systems', 'Software Engineering', 'Cybersecurity'] %}
+      {% set subject_names = subjects | map(attribute='name') | list %}
+      {% for sub in subjects %}
+        <div class="subject-row" {% if loop.last and subject_names | length >= default_subjects | length %}style="margin-bottom:0"{% endif %}>
+          <div class="subject-header">
+            <span class="subject-name">{{ sub.name }}</span>
+            <div>
+              <span class="subject-pct">{{ sub.pct }}%</span>
+              <span class="subject-status {{ sub.label | lower }}">{{ sub.label }}</span>
+            </div>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill {{ sub.label | lower }}" data-width="{{ sub.pct }}"></div>
+          </div>
         </div>
-        <div class="bar-track"><div class="bar-fill good" data-width="95"></div></div>
-      </div>
-
-      <div class="subject-row">
-        <div class="subject-header">
-          <span class="subject-name">Database Systems</span>
-          <div><span class="subject-pct">83%</span><span class="subject-status good">Good</span></div>
-        </div>
-        <div class="bar-track"><div class="bar-fill good" data-width="83"></div></div>
-      </div>
-
-      <div class="subject-row">
-        <div class="subject-header">
-          <span class="subject-name">Software Engineering</span>
-          <div><span class="subject-pct">68%</span><span class="subject-status risk">Risk</span></div>
-        </div>
-        <div class="bar-track"><div class="bar-fill risk" data-width="68"></div></div>
-      </div>
-
-      <div class="subject-row" style="margin-bottom:0">
-        <div class="subject-header">
-          <span class="subject-name">Cybersecurity</span>
-          <div><span class="subject-pct">59%</span><span class="subject-status low">Low</span></div>
-        </div>
-        <div class="bar-track"><div class="bar-fill low" data-width="59"></div></div>
-      </div>
+      {% endfor %}
+      {% for name in default_subjects %}
+        {% if name not in subject_names %}
+          <div class="subject-row" {% if loop.last %}style="margin-bottom:0"{% endif %}>
+            <div class="subject-header">
+              <span class="subject-name">{{ name }}</span>
+              <div>
+                <span class="subject-pct">0%</span>
+                <span class="subject-status low">No Data</span>
+              </div>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill good" data-width="0"></div>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
     </div>
 
   </div><!-- end page-dashboard -->
@@ -192,7 +244,7 @@
   <!-- ── My Attendance Page ── -->
   <div class="page" id="page-attendance">
     <h1 class="page-title">Attendance Records</h1>
-    <p class="page-sub">View your full attendance history by subject and date.</p>
+    <p class="page-sub">A comprehensive record of your attendance across all subjects and dates.</p>
 
     <div class="att-stats">
       <div class="att-card"><div class="att-label">Total</div><div class="att-value">150</div></div>
@@ -247,7 +299,7 @@
   <!-- ── Schedule Page ── -->
   <div class="page" id="page-schedule">
     <h1 class="page-title">Class Schedule</h1>
-    <p class="page-sub">Your weekly timetable for the current semester.</p>
+    <p class="page-sub">Your official class timetable for the current academic semester.</p>
 
     <div class="schedule-day-tabs" id="day-tabs">
       <button class="day-tab active" data-day="Monday">Monday</button>
@@ -263,15 +315,15 @@
   <!-- ── Scan RFID Page ── -->
   <div class="page" id="page-rfid">
     <h1 class="page-title">Scan RFID</h1>
-    <p class="page-sub">Tap your RFID card on the reader to log your attendance.</p>
+    <p class="page-sub">Please present your RFID card to the reader to register your attendance.</p>
 
     <div class="rfid-layout">
       <div class="rfid-scanner-card">
         <div class="rfid-pulse-ring">
           <svg viewBox="0 0 24 24" stroke-width="1.5"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3H8a2 2 0 0 0-2 2v2h12V5a2 2 0 0 0-2-2z"/></svg>
         </div>
-        <div class="rfid-status-label">Waiting for Card…</div>
-        <div class="rfid-status-sub">Hold your RFID card near the reader</div>
+        <div class="rfid-status-label">Awaiting Card Presentation</div>
+        <div class="rfid-status-sub">Please hold your RFID card near the reader.</div>
         <div class="rfid-card-id">Card ID: ── ── ── ──</div>
       </div>
 
@@ -302,7 +354,7 @@
         </div>
 
         <div class="rfid-detail-card">
-          <div class="rfid-detail-title">Today's Scan Log</div>
+          <div class="rfid-detail-title">Today's Attendance Log</div>
           <div class="rfid-log">
             <div class="rfid-log-item">
               <span class="rfid-log-dot in"></span>
@@ -342,30 +394,7 @@
 
 </main>
 
-<script src="{{ url_for('static', filename='js/student.js') }}"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-  const socket = io("http://127.0.0.1:5000",
-    transports = ["websocket"]
-  );
-
-  socket.on("student_scanned", data => {
-    console.log(data)
-    student = data.student
-    subject = data.subject
-    student_class = data.classes
-    document.querySelector(".class-list-scroll").innerHTML += `
-        <div class="class-item">
-          <span class="class-time">${student_class.scanned_at}</span>
-          <span class="dot green"></span>
-          <div class="class-info">
-            <div class="class-name">${subject.name}</div>
-            <div class="class-sub">${subject.room} · Reuben Mallorca</div>
-          </div>
-          <span class="badge in">In</span>
-        </div>
-    `;
-  });
-</script>
+<script src="{{ url_for('static', filename='js/student.js') }}"></script>
 </body>
 </html>

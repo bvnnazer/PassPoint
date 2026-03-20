@@ -28,6 +28,12 @@ const CLASS_INFO = [
 
 function getAll()   { try { return JSON.parse(localStorage.getItem(LS_KEY)||'[]'); } catch { return []; } }
 function saveAll(a) { localStorage.setItem(LS_KEY, JSON.stringify(a)); }
+
+// Remove any injected demo records (lrn starting with 12345678900*)
+(function clearDemoData() {
+  const cleaned = getAll().filter(r => !r.lrn?.startsWith('12345678900'));
+  saveAll(cleaned);
+})();
 function todayStr() { return new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}); }
 function initials(n) { return n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(); }
 function badge(s) { return '<span class="badge '+s+'">'+s.toUpperCase()+'</span>'; }
@@ -50,10 +56,7 @@ window.onload = () => {
 };
 
 function injectDemoRecord() {
-  const all = getAll(), today = todayStr();
-  if (all.some(r => r.lrn==='123456789001' && r.date===today && r.subject==='Web Development')) return;
-  all.push({ lrn:'123456789001', name:'Geo Sumanga', date:today, subject:'Web Development', room:'PH 402', timeIn:'9:03 AM', status:'present', notes:'' });
-  saveAll(all);
+  // Demo injection disabled — all data comes from real RFID scans
 }
 
 function renderDashboard() {
@@ -63,22 +66,47 @@ function renderDashboard() {
   const l = scanned.filter(r=>r.status==='late').length;
   const a = Math.max(0, STUDENTS_DB.length - scanned.length);
   const rate = STUDENTS_DB.length ? Math.round((p+l)/STUDENTS_DB.length*100) : 0;
+
   document.getElementById('t-date-sub').textContent = new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'})+' · BSIT 2-12';
-  document.getElementById('t-rate').textContent = rate+'%';
-  document.getElementById('t-present').textContent = p+l;
-  document.getElementById('t-absent').textContent = a;
-  document.getElementById('t-late').textContent = l;
-  const recent = [...today].reverse().slice(0,6);
-  document.getElementById('dash-scans').innerHTML = recent.length ? recent.map(r=>'<tr><td>'+nameCell(r.name)+'</td><td class="mono">'+r.timeIn+'</td><td style="font-size:12px">'+r.subject+'</td><td>'+badge(r.status)+'</td></tr>').join('') : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:16px">No scans yet today</td></tr>';
-  document.getElementById('t-subject-bars').innerHTML = CLASSES.map((c,i)=>{
-    const sr = all.filter(r=>r.subject===c);
-    const pct = sr.length ? Math.round(sr.filter(r=>r.status!=='absent').length/sr.length*100) : 0;
-    const cls = pct>=80?'good':pct>=60?'risk':'low';
-    return '<div class="subject-row"'+(i===CLASSES.length-1?' style="margin-bottom:0"':'')+'>'+
-      '<div class="subject-header"><span class="subject-name">'+c+'</span><div><span class="subject-pct">'+pct+'%</span><span class="subject-status '+cls+'">'+(cls==='good'?'Good':cls==='risk'?'Risk':'Low')+'</span></div></div>'+
-      '<div class="bar-track"><div class="bar-fill '+cls+'" data-width="'+pct+'"></div></div></div>';
+  document.getElementById('t-rate').textContent    = rate + '%';
+  document.getElementById('t-present').textContent = p + l;
+  document.getElementById('t-absent').textContent  = a;
+  document.getElementById('t-late').textContent    = l;
+
+  // Today's scans table — show centered empty state if no scans
+  const tbody = document.getElementById('dash-scans');
+  const recent = [...today].reverse().slice(0, 6);
+  if (recent.length) {
+    tbody.innerHTML = recent.map(r =>
+      '<tr><td>'+nameCell(r.name)+'</td><td class="mono">'+r.timeIn+'</td><td style="font-size:12px">'+r.subject+'</td><td>'+badge(r.status)+'</td></tr>'
+    ).join('');
+  } else {
+    tbody.innerHTML = `
+      <tr><td colspan="4" style="padding:0;border:none">
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px;gap:10px;text-align:center;">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7v-1a2 2 0 0 1 2 -2h2"/><path d="M4 17v1a2 2 0 0 0 2 2h2"/><path d="M16 4h2a2 2 0 0 1 2 2v1"/><path d="M16 20h2a2 2 0 0 0 2 -2v-1"/><path d="M5 12l14 0"/></svg>
+          <p style="font-size:14px;font-weight:600;color:#9ca3af;margin:0;">No Scans Yet Today</p>
+          <span style="font-size:12px;color:#d1d5db;max-width:220px;line-height:1.5;">Attendance records will appear here once students scan their RFID cards.</span>
+        </div>
+      </td></tr>`;
+  }
+
+  // Subject attendance bars — always show all subjects, 0% when no data
+  document.getElementById('t-subject-bars').innerHTML = CLASSES.map((c, i) => {
+    const sr  = all.filter(r => r.subject === c);
+    const pct = sr.length ? Math.round(sr.filter(r => r.status !== 'absent').length / sr.length * 100) : 0;
+    const cls = pct >= 80 ? 'good' : pct >= 60 ? 'risk' : 'low';
+    const lbl = cls === 'good' ? 'Good' : cls === 'risk' ? 'Risk' : pct === 0 ? 'No Data' : 'Low';
+    return '<div class="subject-row"' + (i === CLASSES.length - 1 ? ' style="margin-bottom:0"' : '') + '>' +
+      '<div class="subject-header"><span class="subject-name">' + c + '</span>' +
+      '<div><span class="subject-pct">' + pct + '%</span>' +
+      '<span class="subject-status ' + cls + '">' + lbl + '</span></div></div>' +
+      '<div class="bar-track"><div class="bar-fill ' + cls + '" data-width="' + pct + '" style="width:0%"></div></div></div>';
   }).join('');
-  setTimeout(()=>{ document.querySelectorAll('.bar-fill').forEach(b=>{ b.style.width=b.dataset.width+'%'; }); },100);
+
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(b => { b.style.width = b.dataset.width + '%'; });
+  }, 100);
 }
 
 function renderLive() {
@@ -282,30 +310,70 @@ function rfidKeyHandler(e,input) { if(e.key==='Enter'){ e.preventDefault(); cons
 function rfidDemoScan() { processRfidScan(STUDENTS_DB[Math.floor(Math.random()*STUDENTS_DB.length)].lrn); }
 
 function processRfidScan(rfidCode) {
-  const subject=document.getElementById('rfid-modal-subject').value;
-  const iconEl=document.getElementById('rfid-anim-icon'), statusEl=document.getElementById('rfid-modal-status');
-  const subEl=document.getElementById('rfid-modal-sub'), box=document.getElementById('rfid-scanner-box');
-  if(!subject){ statusEl.textContent='Select a subject first!'; statusEl.style.color='var(--red)'; subEl.textContent='Choose the subject above before scanning.'; box.style.borderColor='var(--red)'; return; }
-  const student=STUDENTS_DB.find(s=>s.lrn===rfidCode);
-  const now=new Date(), timeStr=now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  if(!student){ iconEl.style.background='var(--red-light)'; iconEl.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'; statusEl.textContent='Unknown Card'; statusEl.style.color='var(--red)'; subEl.textContent='RFID '+rfidCode+' is not registered.'; box.style.borderColor='var(--red)'; setTimeout(rfidResetUI,3000); return; }
-  const status=now.getHours()*60+now.getMinutes()<=(8*60+15)?'present':'late';
-  const all=getAll(), today=now.toISOString().slice(0,10);
-  const filtered=all.filter(r=>!(r.lrn===student.lrn&&r.subject===subject&&r.date===today));
-  filtered.push({lrn:student.lrn,name:student.name,date:today,subject,timeIn:timeStr,status});
-  saveAll(filtered);
-  const sc=status==='present'?'var(--green)':'var(--yellow)', sb=status==='present'?'var(--green-light)':'var(--yellow-light)';
-  iconEl.style.background=sb; iconEl.innerHTML='<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="'+sc+'" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
-  statusEl.textContent=status==='present'?'Marked Present':'Marked Late'; statusEl.style.color=sc;
-  subEl.textContent=student.name+' · '+subject+' · '+timeStr; box.style.borderColor=sc;
-  const re=document.getElementById('rfid-last-result'); re.style.display='flex';
-  document.getElementById('rfid-res-avatar').textContent=initials(student.name);
-  document.getElementById('rfid-res-name').textContent=student.name;
-  document.getElementById('rfid-res-detail').textContent=student.lrn+' · '+subject;
-  const be=document.getElementById('rfid-res-badge'); be.className='badge '+status; be.textContent=status.toUpperCase();
-  showToast((status==='present'?'✅':'⏰')+' '+student.name+' — '+status.charAt(0).toUpperCase()+status.slice(1));
-  if(document.getElementById('live-tbody')) renderLive();
-  setTimeout(rfidResetUI,3500);
+  const subject  = document.getElementById('rfid-modal-subject').value;
+  const iconEl   = document.getElementById('rfid-anim-icon');
+  const statusEl = document.getElementById('rfid-modal-status');
+  const subEl    = document.getElementById('rfid-modal-sub');
+  const box      = document.getElementById('rfid-scanner-box');
+
+  if (!subject) {
+    statusEl.textContent = 'Select a subject first!';
+    statusEl.style.color = 'var(--red)';
+    subEl.textContent    = 'Choose the subject above before scanning.';
+    box.style.borderColor = 'var(--red)';
+    return;
+  }
+
+  // Show scanning state
+  statusEl.textContent  = 'Scanning…';
+  statusEl.style.color  = 'var(--text)';
+  box.style.borderColor = 'var(--green)';
+
+  // POST to Flask backend — same endpoint as arduino.py
+  fetch('http://127.0.0.1:5000/scan_rfid', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify(rfidCode)
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.message) {
+      // Error from backend (not recognized, already scanned, etc.)
+      iconEl.style.background = 'var(--red-light)';
+      iconEl.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+      statusEl.textContent  = data.message;
+      statusEl.style.color  = 'var(--red)';
+      subEl.textContent     = 'RFID: ' + rfidCode;
+      box.style.borderColor = 'var(--red)';
+      setTimeout(rfidResetUI, 3000);
+      return;
+    }
+
+    // Success — socket will fire student_scanned and update the live table
+    const sc = data.status === 'present' ? 'var(--green)' : 'var(--yellow)';
+    const sb = data.status === 'present' ? 'var(--green-light)' : 'var(--yellow-light)';
+    iconEl.style.background = sb;
+    iconEl.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="' + sc + '" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>';
+    statusEl.textContent  = data.status === 'present' ? 'Marked Present' : 'Marked Late';
+    statusEl.style.color  = sc;
+    subEl.textContent     = 'Card: ' + rfidCode + ' · ' + data.status;
+    box.style.borderColor = sc;
+
+    const re = document.getElementById('rfid-last-result');
+    if (re) re.style.display = 'flex';
+
+    showToast((data.status === 'present' ? '✅' : '⏰') + ' Scan recorded — ' + data.status);
+    setTimeout(rfidResetUI, 3500);
+  })
+  .catch(() => {
+    iconEl.style.background = 'var(--red-light)';
+    iconEl.innerHTML = '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#b91c1c" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>';
+    statusEl.textContent  = 'Connection Error';
+    statusEl.style.color  = 'var(--red)';
+    subEl.textContent     = 'Could not reach the Flask server.';
+    box.style.borderColor = 'var(--red)';
+    setTimeout(rfidResetUI, 3000);
+  });
 }
 
 function rfidResetUI() {
@@ -371,4 +439,220 @@ function exportCSV() {
   URL.revokeObjectURL(url);
 
   showToast(`📤 Exported ${recs.length} record${recs.length !== 1 ? 's' : ''}`);
+}
+// ═══════════════════════════════════════════
+//  PASSPOINT — Teacher Dashboard Socket
+//  Matches student portal: append scan live,
+//  then reload after 1.5s for full DB refresh
+// ═══════════════════════════════════════════
+(function initTeacherSocket() {
+  if (typeof io === 'undefined') return;
+  if (!document.getElementById('dash-scans')) return;
+
+  const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
+
+  socket.on("student_scanned", data => {
+    const fullName = data.student_first + ' ' + data.student_last;
+
+    // 1. Immediately append to Today's Scans table
+    const tbody = document.getElementById('dash-scans');
+    if (tbody) {
+      const existingEmpty = tbody.querySelector('td[colspan]');
+      if (existingEmpty) tbody.innerHTML = '';
+
+      const icon = data.status === 'present' ? '✅' : data.status === 'late' ? '⏰' : '❌';
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${nameCell(fullName)}</td>
+        <td class="mono">${data.scanned_at}</td>
+        <td style="font-size:12px">${data.subject}</td>
+        <td>${badge(data.status)}</td>
+      `;
+      tbody.prepend(row);
+    }
+
+    // 2. Show toast
+    const icon = data.status === 'present' ? '✅' : data.status === 'late' ? '⏰' : '❌';
+    showToast(icon + ' ' + fullName + ' — ' + data.status.charAt(0).toUpperCase() + data.status.slice(1));
+
+    // 3. Reload after 1.5s so all stats, bars, and counts refresh from DB
+    setTimeout(() => location.reload(), 1500);
+  });
+})();
+
+// ═══════════════════════════════════════════
+//  PASSPOINT — Attendance Page Socket
+//  Updates live table when RFID is scanned
+// ═══════════════════════════════════════════
+(function initAttendanceSocket() {
+  if (typeof io === 'undefined') return;
+  if (!document.getElementById('live-tbody')) return;
+
+  const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
+
+  socket.on("student_scanned", data => {
+    const fullName = data.student_first + ' ' + data.student_last;
+    const today    = todayStr();
+
+    // Save to localStorage so filters/search keep working
+    const all = getAll();
+    const exists = all.some(r =>
+      r.lrn === data.rfid_uid &&
+      r.subject === data.subject &&
+      r.date === today
+    );
+    if (!exists) {
+      all.push({
+        lrn:     data.rfid_uid,
+        name:    fullName,
+        date:    today,
+        subject: data.subject,
+        room:    data.room,
+        timeIn:  data.scanned_at,
+        status:  data.status,
+        notes:   ''
+      });
+      saveAll(all);
+    }
+
+    // Refresh live table and toast
+    renderLive();
+    const icon = data.status === 'present' ? '✅' : data.status === 'late' ? '⏰' : '❌';
+    showToast(icon + ' ' + fullName + ' — ' + data.status.charAt(0).toUpperCase() + data.status.slice(1));
+
+    // Update rfid-last-result box if modal is open
+    const re = document.getElementById('rfid-last-result');
+    if (re) {
+      re.style.display = 'flex';
+      const av = document.getElementById('rfid-res-avatar');
+      const nm = document.getElementById('rfid-res-name');
+      const dt = document.getElementById('rfid-res-detail');
+      const bg = document.getElementById('rfid-res-badge');
+      if (av) av.textContent = initials(fullName);
+      if (nm) nm.textContent = fullName;
+      if (dt) dt.textContent = data.rfid_uid + ' · ' + data.subject;
+      if (bg) { bg.className = 'badge ' + data.status; bg.textContent = data.status.toUpperCase(); }
+    }
+  });
+})();
+
+// ═══════════════════════════════════════════
+//  PASSPOINT — Students Page
+//  Real API: fetch from DB, add new student
+// ═══════════════════════════════════════════
+
+/* ── Fetch & render students from real DB ── */
+function renderStudents(filter) {
+  fetch('/api/students')
+    .then(res => res.json())
+    .then(rows => {
+      const q = (filter || document.getElementById('live-search')?.value || '').toLowerCase();
+      const list = q ? rows.filter(s =>
+        (s.first_name + ' ' + s.last_name).toLowerCase().includes(q) ||
+        (s.email || '').toLowerCase().includes(q) ||
+        (s.rfid_uid || '').toLowerCase().includes(q)
+      ) : rows;
+
+      const tbody = document.getElementById('students-tbody');
+      if (!tbody) return;
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="20" style="padding:0;border:none">
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/><path d="M9 12h6M9 16h4"/></svg>
+            <div class="empty-state-title">No students found</div>
+            <div class="empty-state-sub">Add a student or adjust your search.</div>
+          </div></td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(s => {
+        const name    = s.first_name + ' ' + s.last_name;
+        const present = parseInt(s.present_count || 0) + parseInt(s.late_count || 0);
+        const late    = parseInt(s.late_count    || 0);
+        const absent  = parseInt(s.absent_count  || 0);
+        const rate    = s.rate || 0;
+        const rc      = rate >= 80 ? 'var(--green)' : rate >= 60 ? 'var(--yellow)' : 'var(--red)';
+        return `<tr>
+          <td>${nameCell(name)}</td>
+          <td class="mono">${s.email || '—'}</td>
+          <td style="color:var(--green);font-weight:600">${present}</td>
+          <td style="color:var(--yellow);font-weight:600">${late}</td>
+          <td style="color:var(--red);font-weight:600">${absent}</td>
+          <td style="font-weight:700;color:${rc}">${rate}%</td>
+          <td style="font-size:12px;color:var(--muted)">${s.last_scan}</td>
+        </tr>`;
+      }).join('');
+    })
+    .catch(() => showToast('⚠️ Could not load students'));
+}
+
+function filterStudents(v) { renderStudents(v); }
+
+/* ── Add Student Modal ── */
+function openAddStudentModal() {
+  document.getElementById('add-student-modal').style.display = 'flex';
+  document.getElementById('add-student-firstname').value = '';
+  document.getElementById('add-student-lastname').value  = '';
+  document.getElementById('add-student-email').value     = '';
+  document.getElementById('add-student-rfid').value      = '';
+  document.getElementById('add-student-password').value  = '';
+  document.getElementById('add-name-err').style.display  = 'none';
+  document.getElementById('add-email-err').style.display = 'none';
+  document.getElementById('add-student-save').disabled   = false;
+  setTimeout(() => document.getElementById('add-student-firstname').focus(), 100);
+}
+
+function closeAddStudentModal() {
+  document.getElementById('add-student-modal').style.display = 'none';
+}
+
+function validateAddStudent() {
+  const fn    = document.getElementById('add-student-firstname').value.trim();
+  const ln    = document.getElementById('add-student-lastname').value.trim();
+  const email = document.getElementById('add-student-email').value.trim();
+  const valid = fn.length > 0 && ln.length > 0 && email.includes('@');
+  document.getElementById('add-student-save').disabled = !valid;
+}
+
+function saveNewStudent() {
+  const first_name = document.getElementById('add-student-firstname').value.trim();
+  const last_name  = document.getElementById('add-student-lastname').value.trim();
+  const email      = document.getElementById('add-student-email').value.trim();
+  const rfid_uid   = document.getElementById('add-student-rfid').value.trim();
+  const password   = document.getElementById('add-student-password').value.trim() || 'password123';
+
+  if (!first_name || !last_name || !email) {
+    document.getElementById('add-name-err').style.display  = !first_name || !last_name ? 'block' : 'none';
+    document.getElementById('add-email-err').style.display = !email ? 'block' : 'none';
+    return;
+  }
+
+  const btn = document.getElementById('add-student-save');
+  btn.disabled     = true;
+  btn.textContent  = 'Saving…';
+
+  fetch('/api/students', {
+    method:  'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body:    JSON.stringify({ first_name, last_name, email, rfid_uid, password })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.error) {
+      document.getElementById('add-email-err').textContent = data.error;
+      document.getElementById('add-email-err').style.display = 'block';
+      btn.disabled    = false;
+      btn.textContent = 'Add Student';
+      return;
+    }
+    closeAddStudentModal();
+    renderStudents();
+    showToast('✅ ' + first_name + ' ' + last_name + ' added successfully');
+  })
+  .catch(() => {
+    showToast('⚠️ Could not save student');
+    btn.disabled    = false;
+    btn.textContent = 'Add Student';
+  });
 }

@@ -60,66 +60,14 @@ function filterTable() {
   renderTable(filtered);
 }
 
-/* ── Nav active state + page switching ── */
-const pages = {
-  'Dashboard':     'page-dashboard',
-  'My Attendance': 'page-attendance',
-  'Schedule':      'page-schedule',
-  'Scan RFID':     'page-rfid'
-};
-
+/* ── Nav active state — let Flask handle routing via href ── */
 document.querySelectorAll('.nav-item').forEach(item => {
   item.addEventListener('click', () => {
-    document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-    item.classList.add('active');
-    const label = item.querySelector('.nav-label')?.textContent.trim();
-    const pageId = pages[label];
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    if (pageId) document.getElementById(pageId).classList.add('active');
-    else document.getElementById('page-dashboard').classList.add('active');
+    // Do nothing extra — just follow the href link naturally
   });
 });
 
-/* ── Build calendar ── */
-(function buildCalendar() {
-  const cal = document.getElementById('calendar');
-  if (!cal) return;
-  const days = ['Su','Mo','Tu','We','Th','Fr','Sa'];
-
-  days.forEach(d => {
-    const h = document.createElement('div');
-    h.className = 'cal-head'; h.textContent = d;
-    cal.appendChild(h);
-  });
-
-  const totalDays = 30;
-  const startDay  = 0; // Sunday
-
-  const status = {
-    2:'p',3:'p',4:'p',5:'p',6:'p',
-    9:'p',10:'p',11:'l',12:'p',13:'p',
-    16:'p',17:'p',18:'p',19:'a',20:'p',
-    23:'p',24:'p',25:'a',26:'p',27:'p',
-  };
-
-  for (let i = 0; i < startDay; i++) {
-    const e = document.createElement('div');
-    e.className = 'cal-day empty'; e.textContent = ' ';
-    cal.appendChild(e);
-  }
-
-  for (let d = 1; d <= totalDays; d++) {
-    const el = document.createElement('div');
-    el.className = 'cal-day';
-    el.textContent = d;
-    const s = status[d];
-    if (s === 'p') el.classList.add('present');
-    else if (s === 'a') el.classList.add('absent');
-    else if (s === 'l') el.classList.add('late');
-    if (d === 5) el.classList.add('today');
-    cal.appendChild(el);
-  }
-})();
+/* ── Calendar is server-rendered via Jinja2 — no JS needed ── */
 
 /* ── Animate progress bars ── */
 window.addEventListener('load', () => {
@@ -218,7 +166,6 @@ renderSchedule('Monday');
 
 /* ── RFID Scan Logic ── */
 (function initRFID() {
-  // Only run on pages that have the rfid elements
   const rfidLog     = document.querySelector('.rfid-log');
   const cardIdEl    = document.getElementById('rfid-card-id');
   const lastScanned = document.querySelector('.last-scanned');
@@ -227,51 +174,70 @@ renderSchedule('Monday');
 
   if (!rfidLog) return; // not on scan rfid page
 
-  const socket = io("http://127.0.0.1:5000", {
-    transports: ["websocket"]
-  });
+  const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
 
-  // ── Student scanned successfully ──
   socket.on("student_scanned", data => {
-    const { student, subject, classes: student_class } = data;
+    if (cardIdEl)    cardIdEl.textContent    = data.rfid_uid;
+    if (lastScanned) lastScanned.textContent = data.scanned_at;
+    if (statusLabel) statusLabel.textContent = "Attendance Recorded Successfully";
+    if (statusSub)   statusSub.textContent   = `Good day, ${data.student_first} ${data.student_last}. Your attendance has been logged.`;
 
-    // Update scanner card
-    if (cardIdEl)    cardIdEl.textContent    = student.rfid_card.number;
-    if (lastScanned) lastScanned.textContent = student.rfid_card.last_scanned;
-    if (statusLabel) statusLabel.textContent = "Card Detected!";
-    if (statusSub)   statusSub.textContent   = `Welcome, ${student.name}`;
-
-    // Remove empty state on first scan
     const empty = document.getElementById('rfid-log-empty');
     if (empty) empty.remove();
 
-    // Prepend log entry
     const item = document.createElement('div');
-    item.className = 'rfid-log-item';
+    item.className = 'class-item';
     item.innerHTML = `
-      <span class="rfid-log-dot in"></span>
-      <span class="rfid-log-time">${student_class.scanned_at}</span>
-      <span class="rfid-log-desc">${subject.name} — ${subject.room}</span>
-      <span class="rfid-log-badge present">PRESENT</span>
+      <span class="class-time">${data.scanned_at}</span>
+      <span class="dot green"></span>
+      <div class="class-info">
+        <div class="class-name">${data.subject}</div>
+        <div class="class-sub">${data.room} · ${data.teacher_first} ${data.teacher_last}</div>
+      </div>
+      <span class="badge ${data.status}">${data.status.toUpperCase()}</span>
     `;
-    rfidLog.prepend(item);
+    rfidLog.appendChild(item);
 
-    // Reset scanner status after 3 seconds
     setTimeout(() => {
-      if (statusLabel) statusLabel.textContent = "Waiting for Card…";
-      if (statusSub)   statusSub.textContent   = "Hold your RFID card near the reader";
+      if (statusLabel) statusLabel.textContent = "Awaiting Card Presentation";
+      if (statusSub)   statusSub.textContent   = "Please hold your RFID card near the reader.";
     }, 3000);
   });
+})();
 
-  // ── Already scanned ──
-  socket.on("already_scanned", data => {
-    const { student } = data;
-    if (statusLabel) statusLabel.textContent = "Already Recorded!";
-    if (statusSub)   statusSub.textContent   = `${student.name} is already marked present`;
+/* ── Dashboard Socket — update today's classes + calendar live on scan ── */
+(function initDashboardSocket() {
+  const classList = document.querySelector('.class-list-scroll');
+  if (!classList) return; // not on dashboard page
+  if (typeof io === 'undefined') return;
 
-    setTimeout(() => {
-      if (statusLabel) statusLabel.textContent = "Waiting for Card…";
-      if (statusSub)   statusSub.textContent   = "Hold your RFID card near the reader";
-    }, 3000);
+  const socket = io("http://127.0.0.1:5000", { transports: ["websocket"] });
+
+  socket.on("student_scanned", data => {
+    // 1. Append to Today's Class Schedule immediately
+    classList.innerHTML += `
+      <div class="class-item">
+        <span class="class-time">${data.scanned_at}</span>
+        <span class="dot green"></span>
+        <div class="class-info">
+          <div class="class-name">${data.subject}</div>
+          <div class="class-sub">${data.room} · ${data.teacher_first} ${data.teacher_last}</div>
+        </div>
+        <span class="badge ${data.status}">${data.status.toUpperCase()}</span>
+      </div>
+    `;
+
+    // 2. Update calendar — find today's cell and apply status color
+    const today = new Date().getDate();
+    const calDays = document.querySelectorAll('.cal-day');
+    calDays.forEach(cell => {
+      if (parseInt(cell.textContent) === today && !cell.classList.contains('empty')) {
+        cell.classList.remove('present', 'absent', 'late');
+        cell.classList.add(data.status);
+      }
+    });
+
+    // 3. Reload after 1.5s so stats and weekly overview refresh from DB
+    setTimeout(() => location.reload(), 1500);
   });
 })();

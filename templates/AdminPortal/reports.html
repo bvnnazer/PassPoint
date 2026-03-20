@@ -85,7 +85,7 @@
   </button>
 </aside>
 
-<main class="main" id="a-main">
+<main class="main no-scroll" id="a-main">
   <h1 class="page-title">Reports</h1>
   <p class="page-sub">School-wide analytics and attendance summaries.</p>
   <div class="stats">
@@ -116,21 +116,30 @@
         </div>
     <div id="rp-subj-bars"></div>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <div class="card-header" style="padding:12px 16px;border-bottom:1px solid var(--border);margin-bottom:0">
-      <span class="card-title">⚠ Students Below 80%</span>
-      <button class="btn btn-outline btn-sm" onclick="showToast('📮 Notifications sent to all guardians!')">Notify All</button>
-    </div>
-    <table>
+  <div class="card table-card" style="padding:0;overflow:hidden;">
+    <div class="thead-wrap" style="background:var(--bg);">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);">
+        <span class="card-title">⚠ Students Below 80%</span>
+        <button class="btn btn-outline btn-sm" onclick="showToast('📮 Notifications sent to all guardians!')">Notify All</button>
+      </div>
+      <table>
         <thead>
-          <tr><th>Student</th><th>Student ID</th><th>Rate</th><th>Absences</th><th>Action</th></tr>
+          <tr><th>Student</th><th>RFID</th><th>Rate</th><th>Absences</th><th>Action</th></tr>
         </thead>
-        <tbody id="rp-flagged-body"></tbody>
       </table>
+    </div>
+    <div class="tbody-wrap">
+      <table>
+        <tbody id="rp-flagged-body">
+          <tr><td colspan="5" style="text-align:center;color:var(--green);padding:20px;">✅ All students are above 80%</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </main>
 
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="/static/js/admin.js"></script>
 </body>
 </html>

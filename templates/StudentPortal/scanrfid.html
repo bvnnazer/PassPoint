@@ -55,7 +55,7 @@
 <main class="main" id="main">
   <div class="page active" id="page-rfid">
     <h1 class="page-title">Scan RFID</h1>
-    <p class="page-sub">Tap your RFID card on the reader to log your attendance.</p>
+    <p class="page-sub">Please present your RFID card to the reader to register your attendance.</p>
 
     <div class="rfid-layout">
 
@@ -65,8 +65,8 @@
           <div class="rfid-pulse-ring">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7v-1a2 2 0 0 1 2 -2h2" /><path d="M4 17v1a2 2 0 0 0 2 2h2" /><path d="M16 4h2a2 2 0 0 1 2 2v1" /><path d="M16 20h2a2 2 0 0 0 2 -2v-1" /><path d="M5 12l14 0" /></svg>
           </div>
-          <div class="rfid-status-label">Waiting for Card…</div>
-          <div class="rfid-status-sub">Hold your RFID card near the reader</div>
+          <div class="rfid-status-label">Awaiting Card Presentation</div>
+          <div class="rfid-status-sub">Please hold your RFID card near the reader.</div>
           <div class="rfid-card-id">Card ID: <span id="rfid-card-id">-- -- -- --</span></div>
         </div>
       </div>
@@ -99,13 +99,35 @@
 
       <!-- Right Row 2: Scan Log — fills remaining height -->
       <div class="rfid-detail-card rfid-scanlog-card">
-        <div class="rfid-detail-title">Today's Scan Log</div>
+        <div class="rfid-detail-title">Today's Attendance Log</div>
         <div class="rfid-log">
-          <div class="rfid-log-empty" id="rfid-log-empty">
-            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M9 12h6" /><path d="M9 16h4" /></svg>
-            <p>No scans yet today</p>
-            <span>Attendance records will appear here once a student scans their card</span>
-          </div>
+          {% if attendance_today %}
+            {% for attendance in attendance_today %}
+
+              <div class="class-item">
+                <span class="class-time">{{ attendance.scanned_at }}</span>
+                <span class="dot green"></span>
+                <div class="class-info">
+                  <div class="class-name">{{ attendance.subject }}</div>
+                  <div class="class-sub">{{attendance.room}} · {{attendance.teacher_first}} {{attendance.teacher_last}}</div>
+                </div>
+                <span class="badge 
+                  {% if attendance.status == 'present' %}present
+                  {% elif attendance.status == 'late' %}late
+                  {% elif attendance.status == 'absent' %}absent
+                  {% endif %}
+                ">{{ attendance.status }}</span>
+              </div>
+
+            {% endfor %}
+
+          {% else %}
+            <div class="rfid-log-empty" id="rfid-log-empty">
+              <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 5h-2a2 2 0 0 0 -2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-12a2 2 0 0 0 -2 -2h-2" /><path d="M9 3m0 2a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v0a2 2 0 0 1 -2 2h-2a2 2 0 0 1 -2 -2z" /><path d="M9 12h6" /><path d="M9 16h4" /></svg>
+              <p>No Attendance Records for Today</p>
+              <span>Records will be displayed upon successful RFID card presentation.</span>
+            </div>
+          {% endif %}
         </div>
       </div>
 
@@ -114,6 +136,28 @@
 </main>
 
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script src="{{ url_for('static', filename='js/student.js') }}"></script>
+<script src="{{ url_for('static', filename='js/student.js') }}"></script> 
+<script>
+  const socket = io("http://127.0.0.1:5000", {
+    transports: ["websocket"]
+  });
+
+  socket.on("student_scanned", data => {
+    console.log(data)
+
+    document.querySelector("#rfid-card-id").textContent = data.rfid_uid;
+    document.querySelector(".rfid-log").innerHTML += `
+        <div class="class-item">
+          <span class="class-time">${data.scanned_at}</span>
+          <span class="dot green"></span>
+          <div class="class-info">
+            <div class="class-name">${data.subject}</div>
+            <div class="class-sub">${data.room} · ${data.teacher_first + data.teacher_last}</div>
+          </div>
+          <span class="badge ${data.status}">${data.status.toUpperCase()}</span>
+        </div>
+    `;
+  });
+</script>
 </body>
 </html>

@@ -85,39 +85,47 @@
   </button>
 </aside>
 
-<main class="main" id="a-main">
+<main class="main no-scroll" id="a-main">
   <h1 class="page-title">Teachers</h1>
   <p class="page-sub">Manage faculty accounts and subject assignments.</p>
   <div class="filter-row">
-    <input type="text" class="input" placeholder="🔍 Search teacher..." oninput="renderTeachers(this.value)" style="flex:1">
-    <button class="btn btn-green" onclick="openModal('teacher')">+ Add Teacher</button>
+    <div style="position:relative;width:320px;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="input" placeholder="Search teacher..." oninput="renderTeachers(this.value)" style="width:100%;padding-left:32px;box-sizing:border-box;"></div>
+    <button class="btn btn-green" onclick="openModal('teacher')" style="display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Teacher</button>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table>
-        <thead>
-          <tr><th>Teacher</th><th>Employee ID</th><th>Subject</th><th>Room</th><th>Schedule</th><th>Status</th><th>Action</th></tr>
-        </thead>
-        <tbody id="teachers-body"></tbody>
+  <div class="card table-card" style="padding:0;overflow:hidden;">
+        <div class="thead-wrap" style="background:var(--bg);">
+      <table style="table-layout:fixed;width:100%">
+        <colgroup><col style="width:200px"><col style="width:190px"><col style="width:150px"><col style="width:80px"><col style="width:100px"><col style="width:90px"><col style="width:150px"></colgroup>
+        <thead><tr><th style="text-align:left">Teacher</th><th style="text-align:left">Email</th><th style="text-align:left">Subject</th><th style="text-align:center">Room</th><th style="text-align:center">Schedule</th><th style="text-align:center">Status</th><th style="text-align:right">Actions</th></tr></thead>
       </table>
+    </div>
+    <div class="tbody-wrap">
+      <table style="table-layout:fixed;width:100%">
+        <colgroup><col style="width:200px"><col style="width:190px"><col style="width:150px"><col style="width:80px"><col style="width:100px"><col style="width:90px"><col style="width:150px"></colgroup>
+        <tbody id="teachers-body">
+          <tr><td colspan="7" style="text-align:center;color:var(--muted);padding:20px;">No teachers found</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </main>
 
-<!-- MODAL — ADD TEACHER -->
+<!-- MODAL — ADD STUDENT -->
 <div class="modal-overlay" id="modal-teacher">
-  <div class="modal-backdrop" onclick="closeModal('teacher')"></div>
+  <div class="modal-backdrop" onclick="closeModal('student')"></div>
   <div class="modal-box">
-    <button class="modal-close" onclick="closeModal('teacher')">×</button>
+    <button class="modal-close" onclick="closeModal('student')">×</button>
     <div class="modal-title">Add Teacher</div>
     <div class="modal-sub">Register a new faculty member to the system.</div>
     <div class="form-group"><label class="form-label">Full Name</label><input class="form-control" id="t-name" placeholder="e.g. Maria Santos"></div>
     <div class="form-group"><label class="form-label">Employee ID</label><input class="form-control" id="t-empid" placeholder="e.g. EMP-2024-006"></div>
     <div class="form-group"><label class="form-label">Subject</label><select class="form-control" id="t-subject"><option>Data Structures</option><option>Web Development</option><option>Database Systems</option><option>Software Engineering</option><option>Cybersecurity</option></select></div>
     <div class="form-group"><label class="form-label">Room</label><input class="form-control" id="t-room" placeholder="e.g. PH 411"></div>
-    <div class="form-group"><label class="form-label">Schedule (Days)</label><input class="form-control" id="t-days" placeholder="e.g. Mon Wed Fri"></div>
     <div class="modal-footer"><button class="btn btn-outline" onclick="closeModal('teacher')">Cancel</button><button class="btn btn-green" onclick="addTeacher()">Add Teacher</button></div>
   </div>
 </div>
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="/static/js/admin.js"></script>
 </body>
 </html>

@@ -34,10 +34,12 @@
       </button>
     </div>
     <div class="or-divider"><span>OR SIGN IN WITH EMAIL</span></div>
-    <div class="field"><input type="email" placeholder="Email address" /></div>
-    <div class="field"><input type="password" placeholder="Password" /></div>
-    <p class="forgot"><a href="#">Forgot your password?</a></p>
-    <button class="btn-main">Sign In</button>
+    <form action="/login" method="POST">
+      <div class="field"><input type="email" name="email" placeholder="Email address" /></div>
+      <div class="field"><input type="password" name="password" placeholder="Password" /></div>
+      <p class="forgot"><a href="#">Forgot your password?</a></p>
+      <button type="submit" class="btn-main">Sign In</button>
+    </form>
   </div>
 
   <!-- ── SIGN UP FORM ── -->
@@ -64,15 +66,17 @@
       </button>
     </div>
     <div class="or-divider"><span>OR SIGN UP WITH EMAIL</span></div>
-    <div class="field-row">
-      <div class="field"><input type="text" placeholder="First name" /></div>
-      <div class="field"><input type="text" placeholder="Last name" /></div>
-    </div>
-    <div class="field"><input type="email" placeholder="Email address" /></div>
-    <div class="field"><input type="text" placeholder="School / Institution" /></div>
-    <div class="field"><input type="password" placeholder="Create a password" /></div>
-    <button class="btn-main">Create Account</button>
-    <p class="terms">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+    <form>
+      <div class="field-row">
+        <div class="field"><input type="text" placeholder="First name" /></div>
+        <div class="field"><input type="text" placeholder="Last name" /></div>
+      </div>
+      <div class="field"><input type="email" placeholder="Email address" /></div>
+      <div class="field"><input type="text" placeholder="School / Institution" /></div>
+      <div class="field"><input type="password" placeholder="Create a password" /></div>
+      <button class="btn-main">Create Account</button>
+      <p class="terms">By signing up, you agree to our <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></p>
+    </form>
   </div>
 
   <!-- ── GREEN OVERLAY ── -->

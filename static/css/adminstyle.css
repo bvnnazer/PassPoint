@@ -34,7 +34,8 @@ body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--text);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
   display: flex;
 }
 
@@ -366,7 +367,11 @@ body {
   flex: 1;
   padding: 28px 32px;
   transition: margin-left var(--sb-duration) var(--sb-ease);
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
 }
 
 .main.shifted {
@@ -638,7 +643,7 @@ select.input {
   height: 100%;
   border-radius: 6px;
   width: 0%;
-  transition: width 0.6s ease;
+  transition: width 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .bar-fill.good { background: var(--green); }
@@ -647,32 +652,47 @@ select.input {
 
 /* ── Subject Row ── */
 .subject-row {
-  margin-bottom: 14px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.subject-row:last-child {
+  border-bottom: none;
+}
+
+.subject-row:first-child {
+  padding-top: 0;
 }
 
 .subject-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .subject-name {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
+  color: var(--text);
 }
 
 .subject-pct {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  margin-right: 8px;
+  margin-right: 6px;
 }
 
 .subject-status {
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 2px 7px;
   border-radius: 20px;
+  letter-spacing: 0.3px;
 }
 
 .subject-status.good { background: var(--green-light);  color: var(--green-dark); }
@@ -839,4 +859,277 @@ select.input {
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: 3px;
+}
+
+/* ══════════════════════════════════════
+   LAYOUT — Dashboard scrolls, tables fill
+   ══════════════════════════════════════ */
+
+/* Dashboard — page scrolls */
+#a-main {
+  overflow-y: auto;
+  padding-bottom: 32px;
+}
+
+/* Table pages — fixed, card fills remaining height */
+#a-main.no-scroll {
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
+#a-main.no-scroll > .page-title,
+#a-main.no-scroll > .page-sub,
+#a-main.no-scroll > .filter-row,
+#a-main.no-scroll > .stats,
+#a-main.no-scroll > .stats-3,
+#a-main.no-scroll > .card:not(.table-card) {
+  flex-shrink: 0;
+}
+
+/* table-card fills all remaining viewport height */
+#a-main.no-scroll > .table-card {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  margin-bottom: 0;
+}
+
+/* thead pinned */
+.table-card .thead-wrap {
+  flex-shrink: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+}
+
+.table-card .thead-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* tbody scrolls */
+.table-card .tbody-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.table-card .tbody-wrap::-webkit-scrollbar { width: 4px; }
+.table-card .tbody-wrap::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.table-card .tbody-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.page-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.page-scroll table {
+  table-layout: fixed;
+  width: 100%;
+}
+/* Action col always center */
+td:last-child, th:last-child { text-align: center; }
+/* ══════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════ */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  gap: 10px;
+  text-align: center;
+  color: var(--muted2);
+}
+
+.empty-state svg {
+  stroke: #d1d5db;
+}
+
+.empty-state-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #9ca3af;
+}
+
+.empty-state-sub {
+  font-size: 12px;
+  color: #d1d5db;
+  max-width: 240px;
+  line-height: 1.5;
+}
+
+/* ══════════════════════════════════════
+   TABLE SCROLL WRAPPER
+   ══════════════════════════════════════ */
+.table-scroll-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  min-height: 0;
+}
+
+.table-scroll-wrapper::-webkit-scrollbar {
+  display: none;
+}
+
+/* ══════════════════════════════════════
+   SOCKET LIVE INDICATOR
+   ══════════════════════════════════════ */
+.modal-input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  font-size: 13px;
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--white);
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.modal-input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px rgba(22,163,74,0.08);
+}
+
+/* ══════════════════════════════════════
+   ACTION BUTTONS — balanced icon+text
+   ══════════════════════════════════════ */
+.btn-sm {
+  padding: 5px 10px;
+  font-size: 11px;
+  border-radius: 6px;
+  white-space: nowrap;
+}
+
+.btn-sm svg {
+  flex-shrink: 0;
+}
+
+/* Center action column cells */
+td:last-child {
+  text-align: center;
+  vertical-align: middle;
+}
+
+th:last-child {
+  text-align: center;
+}
+
+/* ══════════════════════════════════════
+   REMOVE LEGACY CONFLICTING OVERRIDES
+   ══════════════════════════════════════ */
+
+/* thead/tbody colgroup must match widths — reset table-layout on legacy .card > table */
+.main > .card > table {
+  table-layout: auto;
+  width: 100%;
+}
+
+/* att-scroll / page-scroll legacy — no longer used */
+.att-scroll,
+.page-scroll {
+  display: none;
+}
+/* ── tbody min/max height balance ── */
+.table-card .tbody-wrap {
+  max-height: calc(100vh - 280px);
+  min-height: 120px;
+}
+
+#a-main.no-scroll > .table-card .tbody-wrap {
+  max-height: none;
+}
+
+/* ── Tighten table pages bottom gap ── */
+#a-main.no-scroll {
+  padding-bottom: 20px;
+}
+
+/* ── Table cell alignment ── */
+td {
+  vertical-align: middle;
+}
+
+/* ── Dropdown arrow — properly centered ── */
+select.input {
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 10px;
+  padding-right: 28px;
+  cursor: pointer;
+}
+
+/* ── Action buttons — consistent sizing ── */
+.btn-sm {
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 6px;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+/* ── Action buttons — clean, no icons ── */
+.action-btn {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  border: 1.5px solid var(--border);
+  transition: all 0.14s;
+  white-space: nowrap;
+  line-height: 1.5;
+}
+
+.edit-btn {
+  background: white;
+  color: var(--muted);
+  border-color: var(--border);
+}
+
+.edit-btn:hover {
+  border-color: var(--green);
+  color: var(--green-dark);
+  background: var(--green-hover);
+}
+
+.remove-btn {
+  background: var(--red-light);
+  color: #b91c1c;
+  border-color: #fca5a5;
+}
+
+.remove-btn:hover {
+  background: #fca5a5;
+}
+
+/* ── Table cell vertical + horizontal alignment ── */
+td {
+  vertical-align: middle;
+}
+
+th {
+  white-space: nowrap;
 }

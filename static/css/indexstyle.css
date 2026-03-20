@@ -40,6 +40,9 @@
      overlay physically covers one at
      a time.
   ══════════════════════════════════ */
+  /* ══════════════════════════════════
+     FORM PANELS
+  ══════════════════════════════════ */
   .form-panel {
     position: absolute;
     top: 0;
@@ -49,13 +52,33 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 48px 56px;
+    padding: 40px 24px;
     background: #fff;
     transition: all 0.6s ease-in-out;
   }
 
   .sign-in { left: 0; }
   .sign-up { right: 0; }
+
+  /* Both form tags transparent to layout */
+  .sign-in form,
+  .sign-up form {
+    display: contents;
+  }
+
+  /* Every direct child of both panels — identical width */
+  .form-panel > *,
+  .sign-in form > *,
+  .sign-up form > * {
+    width: 100%;
+    max-width: 340px;
+    box-sizing: border-box;
+    align-self: center;
+  }
+
+  /* field-row itself stretches to 340px; children fill flex slots */
+  .field-row { display: flex; gap: 10px; width: 100%; max-width: 340px; align-self: center; }
+  .field-row .field { max-width: none; flex: 1; width: auto; }
 
   /* ══════════════════════════════════
      GREEN OVERLAY PANEL
@@ -170,13 +193,14 @@
     font-size: 28px; font-weight: 800;
     color: var(--text); margin-bottom: 5px;
     letter-spacing: -0.4px;
+    text-align: center;
   }
   .panel-sub {
     font-size: 13px; color: var(--muted);
     margin-bottom: 20px; text-align: center;
   }
 
-  .social-btns { display: flex; gap: 10px; margin-bottom: 16px; }
+  .social-btns { display: flex; gap: 10px; margin-bottom: 16px; justify-content: center; }
   .social-btn {
     width: 42px; height: 42px;
     border: 1.5px solid var(--border); border-radius: 10px;
@@ -194,7 +218,7 @@
 
   .or-divider {
     display: flex; align-items: center; gap: 10px;
-    width: 100%; max-width: 340px; margin-bottom: 14px;
+    margin-bottom: 14px;
   }
   .or-divider::before, .or-divider::after {
     content: ''; flex: 1; height: 1px; background: var(--border);
@@ -204,12 +228,14 @@
     letter-spacing: 0.6px; white-space: nowrap;
   }
 
-  .field { width: 100%; max-width: 340px; margin-bottom: 11px; }
+  .field { margin-bottom: 10px; }
   .field input {
-    width: 100%; padding: 12px 15px;
+    width: 100%; padding: 13px 16px;
     border: 1.5px solid var(--border); border-radius: 10px;
-    font-size: 13.5px; font-family: var(--font); color: var(--text);
+    font-size: 14px; font-family: var(--font); color: var(--text);
     background: #f8fafc; outline: none;
+    height: 48px;
+    box-sizing: border-box;
     transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
   }
   .field input:focus {
@@ -218,27 +244,21 @@
   }
   .field input::placeholder { color: #b0bec5; }
 
-  .field-row {
-    display: flex; gap: 10px;
-    width: 100%; max-width: 340px; margin-bottom: 11px;
-  }
-  .field-row .field { margin-bottom: 0; max-width: none; flex: 1; }
-
   .forgot {
     font-size: 12px; color: var(--muted);
-    text-align: right; margin-bottom: 18px;
-    max-width: 340px; width: 100%;
+    text-align: right; margin-bottom: 16px;
   }
   .forgot a { text-decoration: none; color: inherit; }
   .forgot a:hover { color: var(--green); }
 
   .btn-main {
-    width: 100%; max-width: 340px; padding: 13px;
+    width: 100%; padding: 14px;
     background: var(--green); color: #fff;
     font-size: 13px; font-weight: 700;
     border: none; border-radius: 50px;
     cursor: pointer; font-family: var(--font);
     letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 4px;
     transition: background 0.15s, transform 0.1s;
   }
   .btn-main:hover { background: var(--green-dark); }
@@ -246,7 +266,7 @@
 
   .terms {
     font-size: 11px; color: var(--muted);
-    text-align: center; max-width: 300px;
+    text-align: center; max-width: 380px;
     margin-top: 10px; line-height: 1.6;
   }
   .terms a { color: var(--green); text-decoration: none; font-weight: 600; }

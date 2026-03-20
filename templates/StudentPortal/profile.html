@@ -235,15 +235,12 @@
       </div>
       <div class="modal-field">
         <label class="modal-label">Year Level</label>
-        <div class="modal-select-wrap">
-          <select class="modal-input modal-select" id="edit-year">
-            <option>1st Year</option>
-            <option>2nd Year</option>
-            <option selected>3rd Year</option>
-            <option>4th Year</option>
-          </select>
-          <svg class="modal-select-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 9l6 6 6-6"/></svg>
-        </div>
+        <select class="modal-input" id="edit-year">
+          <option>1st Year</option>
+          <option>2nd Year</option>
+          <option selected>3rd Year</option>
+          <option>4th Year</option>
+        </select>
       </div>
     </div>
     <div class="modal-footer">
@@ -274,72 +271,31 @@
 
 <script src="{{ url_for('static', filename='js/student.js') }}"></script>
 <script>
-  // ── Edit Modal ──
   function openEditModal() {
-    // Pre-populate inputs from current displayed values
-    document.getElementById('edit-fullname').value = document.getElementById('display-fullname').textContent;
-    document.getElementById('edit-email').value    = document.getElementById('display-email').textContent;
-    document.getElementById('edit-course').value   = document.getElementById('display-course').textContent;
-    document.getElementById('edit-section').value  = document.getElementById('display-section').textContent;
-
-    const year = document.getElementById('display-year').textContent;
-    const yearSelect = document.getElementById('edit-year');
-    for (let opt of yearSelect.options) {
-      opt.selected = opt.value === year;
-    }
-
     document.getElementById('edit-modal').classList.add('active');
-    document.getElementById('edit-fullname').focus();
   }
-
   function closeEditModal(e) {
     if (!e || e.target.id === 'edit-modal')
       document.getElementById('edit-modal').classList.remove('active');
   }
-
   function saveProfile() {
     const name    = document.getElementById('edit-fullname').value.trim();
     const email   = document.getElementById('edit-email').value.trim();
     const course  = document.getElementById('edit-course').value.trim();
     const section = document.getElementById('edit-section').value.trim();
     const year    = document.getElementById('edit-year').value;
-
-    // Validation
-    if (!name) {
-      document.getElementById('edit-fullname').style.borderColor = 'var(--red)';
-      document.getElementById('edit-fullname').focus();
-      return;
-    }
-    document.getElementById('edit-fullname').style.borderColor = '';
-
-    // Update all display fields
+    if (!name) return;
     document.getElementById('display-fullname').textContent = name;
     document.getElementById('display-email').textContent    = email;
     document.getElementById('display-course').textContent   = course;
     document.getElementById('display-section').textContent  = section;
     document.getElementById('display-year').textContent     = year;
-
-    // Update header
-    document.getElementById('display-name').textContent = name;
-    document.getElementById('display-meta').textContent =
-      `${course} ${section} · ${year} · Student ID: 2022-0451`;
-
-    // Update avatar initials
+    document.getElementById('display-name').textContent     = name;
+    document.getElementById('display-meta').textContent     = `${course} ${section} · ${year} · Student ID: 2022-0451`;
     const initials = name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
     document.getElementById('profile-avatar-display').textContent = initials;
-
-    // Show success flash on button
-    const saveBtn = document.querySelector('.btn-save');
-    saveBtn.textContent = '✓ Saved!';
-    saveBtn.style.background = '#16a34a';
-    setTimeout(() => {
-      saveBtn.textContent = 'Save Changes';
-      saveBtn.style.background = '';
-      closeEditModal();
-    }, 800);
+    closeEditModal();
   }
-
-  // ── Logout Modal ──
   function confirmLogout() {
     document.getElementById('logout-modal').classList.add('active');
   }
@@ -347,14 +303,6 @@
     if (!e || e.target.id === 'logout-modal')
       document.getElementById('logout-modal').classList.remove('active');
   }
-
-  // ── Close modal on Escape key ──
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      closeEditModal();
-      closeLogoutModal();
-    }
-  });
 </script>
 </body>
 </html>

@@ -85,20 +85,28 @@
   </button>
 </aside>
 
-<main class="main" id="a-main">
+<main class="main no-scroll" id="a-main">
   <h1 class="page-title">Students</h1>
   <p class="page-sub">Manage student enrollment and RFID tag assignments.</p>
   <div class="filter-row">
-    <input type="text" class="input" placeholder="🔍 Search name or ID..." oninput="renderStudents(this.value)" style="flex:1">
-    <button class="btn btn-green" onclick="openModal('student')">+ Add Student</button>
+    <div style="position:relative;width:320px;"><svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg><input type="text" class="input" placeholder="Search name or RFID..." oninput="renderStudents(this.value)" style="width:100%;padding-left:32px;box-sizing:border-box;"></div>
+    <button class="btn btn-green" onclick="openModal('student')" style="display:flex;align-items:center;gap:6px;white-space:nowrap;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Add Student</button>
   </div>
-  <div class="card" style="padding:0;overflow:hidden">
-    <table>
-        <thead>
-          <tr><th>Student</th><th>Student ID</th><th>RFID Tag</th><th>Section</th><th>Present</th><th>Absent</th><th>Rate</th><th>Status</th><th>Action</th></tr>
-        </thead>
-        <tbody id="students-body"></tbody>
+  <div class="card table-card" style="padding:0;overflow:hidden;">
+        <div class="thead-wrap" style="background:var(--bg);">
+      <table style="table-layout:fixed;width:100%">
+        <colgroup><col style="width:190px"><col style="width:160px"><col style="width:110px"><col style="width:70px"><col style="width:70px"><col style="width:70px"><col style="width:65px"><col style="width:80px"><col style="width:150px"></colgroup>
+        <thead><tr><th style="text-align:left">Student</th><th style="text-align:left">Email</th><th style="text-align:center">RFID Tag</th><th style="text-align:center">Section</th><th style="text-align:center">Present</th><th style="text-align:center">Absent</th><th style="text-align:center">Rate</th><th style="text-align:center">Status</th><th style="text-align:right">Actions</th></tr></thead>
       </table>
+    </div>
+    <div class="tbody-wrap">
+      <table style="table-layout:fixed;width:100%">
+        <colgroup><col style="width:190px"><col style="width:160px"><col style="width:110px"><col style="width:70px"><col style="width:70px"><col style="width:70px"><col style="width:65px"><col style="width:80px"><col style="width:150px"></colgroup>
+        <tbody id="students-body">
+          <tr><td colspan="9" style="text-align:center;color:var(--muted);padding:20px;">No students found</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </main>
 
@@ -117,6 +125,7 @@
   </div>
 </div>
 <div class="toast" id="toast"><span id="toast-msg"></span></div>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script src="/static/js/admin.js"></script>
 </body>
 </html>
